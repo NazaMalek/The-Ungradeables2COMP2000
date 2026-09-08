@@ -12,18 +12,18 @@ public class SoccerPitch extends JPanel {
         players = new Player[] {
 
             // Blue team
-            new Player(100, 200, Color.BLUE),
-            new Player(180, 100, Color.BLUE),
-            new Player(180, 300, Color.BLUE),
-            new Player(280, 150, Color.BLUE),
-            new Player(280, 250, Color.BLUE),
+            new Player(100, 200, 1, Color.BLUE),
+            new Player(180, 100, 2, Color.BLUE),
+            new Player(180, 300, 3, Color.BLUE),
+            new Player(280, 150, 4, Color.BLUE),
+            new Player(280, 250, 5, Color.BLUE),
 
             // Red team
-            new Player(600, 200, Color.RED),
-            new Player(520, 100, Color.RED),
-            new Player(520, 300, Color.RED),
-            new Player(420, 150, Color.RED),
-            new Player(420, 250, Color.RED)
+            new Player(600, 200, 1, Color.RED),
+            new Player(520, 100, 2, Color.RED),
+            new Player(520, 300, 3, Color.RED),
+            new Player(420, 150, 4, Color.RED),
+            new Player(420, 250, 5, Color.RED)
         };
     }
 
