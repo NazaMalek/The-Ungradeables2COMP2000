@@ -8,7 +8,7 @@ NEEDS:
 - main menu
     - background splash graphic 
     - start button 
-        - display an overview graphic of  pitch with players on it 
+        - display an overview graphic of pitch with players on it with the current formation (default formation if no changes made)
         - formation change button 
             - list of players for one team
             - displays a graphic of a pitch with symbols of what each player postion is
