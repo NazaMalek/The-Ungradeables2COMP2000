@@ -50,6 +50,7 @@ public class SimulationUI {
     public class UIWindow {
         JFrame frame;
         Menus currentMenu;
+        boolean debugMode = false;
 
         public UIWindow() {
             frame = new JFrame("Soccer Simulation");
@@ -68,6 +69,14 @@ public class SimulationUI {
         void start() {
             setMenu(new MainMenu(this));
             frame.setVisible(true);
+        }
+
+        boolean getDebug(){
+            return this.debugMode;
+        }
+
+        void setDebug(boolean b){
+            this.debugMode = b;
         }
     }
 
@@ -117,7 +126,6 @@ public class SimulationUI {
 
         @Override 
         void next3(){
-            // no third menu 
         }
 
         @Override
@@ -172,7 +180,38 @@ public class SimulationUI {
     }
 
     public class SettingsMenu extends Menus {
+        SettingsMenu(UIWindow window) {
+            super(window);
 
+            JButton startButton = new JButton("Debug Mode");
+            startButton.addActionListener(e -> window.setDebug(true));
+
+            JButton exitButton = new JButton("Save");
+            exitButton.addActionListener(e -> back());
+
+            add(startButton);
+            add(exitButton);
+        }
+
+        @Override
+        void next1() {
+            // need to add like a check box here
+        }
+
+        @Override
+        void next2() {
+            
+        }
+
+        @Override
+        void next3() {
+            
+        }
+
+        @Override
+        void back() {
+            window.setMenu(new MainMenu(window));
+        }
     }
 
     public class FormationMenu extends Menus {
