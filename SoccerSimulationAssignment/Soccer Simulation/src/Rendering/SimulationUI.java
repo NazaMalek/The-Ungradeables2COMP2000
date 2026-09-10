@@ -135,6 +135,10 @@ public class SimulationUI {
 
     }
 
+    /*
+    need to add the pitch with current settings loaded/saved next to buttons
+    if time permits add the match settings (optional non-functional)
+    */
     public class StartMenu extends Menus {
         StartMenu(UIWindow window) {
             super(window);
@@ -214,6 +218,12 @@ public class SimulationUI {
         }
     }
 
+    /*
+    need to add the special buttons with arrows on them for the formation 
+    need to add the pitch next to the buttons displaying the current formation for each side
+    need to add the swap side button and have it implemented 
+    
+    */
     public class FormationMenu extends Menus {
         FormationMenu(UIWindow window) {
             super(window);
