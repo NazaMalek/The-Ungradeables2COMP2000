@@ -215,11 +215,69 @@ public class SimulationUI {
     }
 
     public class FormationMenu extends Menus {
+        FormationMenu(UIWindow window) {
+            super(window);
 
+            JButton startButton = new JButton("Debug Mode");
+            startButton.addActionListener(e -> window.setDebug(true));
+
+            JButton exitButton = new JButton("Save");
+            exitButton.addActionListener(e -> back());
+
+            add(startButton);
+            add(exitButton);
+        }
+
+        @Override
+        void next1() {
+        }
+
+        @Override
+        void next2() {
+
+        }
+
+        @Override
+        void next3() {
+
+        }
+
+        @Override
+        void back() {
+            window.setMenu(new MainMenu(window));
+        }
     }
 
     public class MatchSettingsMenu extends Menus {
+        MatchSettingsMenu(UIWindow window) {
+            super(window);
 
+            JButton exitButton = new JButton("Save");
+            exitButton.addActionListener(e -> back());
+
+            add(exitButton);
+        }
+
+        @Override
+        void next1() {
+            // empty for the time being 
+        }
+
+        @Override
+        void next2() {
+            // empty for the time being
+
+        }
+
+        @Override
+        void next3() {
+            // empty for the time being
+        }
+
+        @Override
+        void back() {
+            window.setMenu(new StartMenu(window));
+        }
     }
 
     public class SimWindow {
