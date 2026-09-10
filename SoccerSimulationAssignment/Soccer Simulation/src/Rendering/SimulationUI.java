@@ -54,17 +54,29 @@ public class SimulationUI {
         frame = new JFrame("Soccer Simulation");
         frame.setSize(700, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        showMainMenu(); // start here
+        showMainMenu(); 
         frame.setVisible(true);
     }
 
 
 
     abstract class Menus{
-        
+        abstract void next();
+        abstract void back();
     }
 
-    public class MainMenu {
+    public class MainMenu extends Menus{
+        @Override 
+        void next(){
+
+        }
+        
+        
+        @Override
+        void back() {
+
+        }
+        
 
     }
 
