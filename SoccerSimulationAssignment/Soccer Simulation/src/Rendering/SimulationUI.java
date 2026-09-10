@@ -43,40 +43,78 @@ NEEDS:
  */
 
 import java.awt.*;
-
-import javax.swing.JFrame;
+import javax.swing.*;
 
 public class SimulationUI {
 
-    JFrame frame;
+    public class UIWindow {
+        JFrame frame;
+        Menus currentMenu;
 
-    public SimulationUI() {
-        frame = new JFrame("Soccer Simulation");
-        frame.setSize(700, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        showMainMenu(); 
-        frame.setVisible(true);
+        public UIWindow() {
+            frame = new JFrame("Soccer Simulation");
+            frame.setSize(700, 400);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLocationRelativeTo(null);
+        }
+
+        void setMenu(Menus menu) {
+            currentMenu = menu;
+            frame.setContentPane(menu);
+            frame.revalidate();
+            frame.repaint();
+        }
+
+        void start() {
+            setMenu(new MainMenu(this));
+            frame.setVisible(true);
+        }
     }
 
+    abstract class Menus extends JPanel {
+        protected UIWindow window;
 
+        Menus(UIWindow window) {
+            this.window = window;
+        }
 
-    abstract class Menus{
-        abstract void next();
+        abstract void next1();
+
+        abstract void next2();
+
         abstract void back();
     }
 
-    public class MainMenu extends Menus{
-        @Override 
-        void next(){
+    public class MainMenu extends Menus {
+        MainMenu(UIWindow window) {
+            super(window);
 
+            JButton startBtn = new JButton("Start");
+            startBtn.addActionListener(e -> next1());
+            JButton settingButton = new JButton("Settings");
+            settingButton.addActionListener(e -> next1());
+            JButton exitButton = new JButton("exit");
+            exitButton.addActionListener(e -> next1());
+
+            add(startBtn);
+            add(settingButton);
+            add(exitButton);
         }
-        
         
         @Override
-        void back() {
-
+        void next1() {
+            window.setMenu(new StartMenu(window));
         }
-        
+
+        @Override 
+        void next2(){
+            window.setMenu(new SettingsMenu(window));
+        }
+
+        @Override
+        void back() {
+            System.exit(0);
+        }
 
     }
 
@@ -105,8 +143,7 @@ public class SimulationUI {
     }
 
     public static void main(String[] args) {
-        UIWindow win = new UIWindow();
-        win.drawWindow();
+        new UIWindow().start();
     }
 
 }
