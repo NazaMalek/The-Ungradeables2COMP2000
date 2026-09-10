@@ -1,4 +1,3 @@
-
 /*
 WILLIAM IS DOING THIS PART
 The gui will be the what displays eveything it ties it all together, 
@@ -42,261 +41,274 @@ NEEDS:
 
  */
 
+package Rendering;
+
 import java.awt.*;
 import javax.swing.*;
 
+class UIWindow {
+    JFrame frame;
+    Menus currentMenu;
+    boolean debugMode = false;
+
+    public UIWindow() {
+        frame = new JFrame("Soccer Simulation");
+        frame.setSize(700, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+    }
+
+    void setMenu(Menus menu) {
+        currentMenu = menu;
+        frame.setContentPane(menu);
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    void start() {
+        setMenu(new MainMenu(this));
+        frame.setVisible(true);
+    }
+
+    boolean getDebug() {
+        return this.debugMode;
+    }
+
+    void setDebug(boolean b) {
+        this.debugMode = b;
+        frame.setTitle("Soccer Simulation" + debugString());
+    }
+
+    private String debugString (){
+        if(this.getDebug() == true) return " (Debug)";
+
+        return "";
+    }
+}
+
+abstract class Menus extends JPanel {
+    protected UIWindow window;
+
+    Menus(UIWindow window) {
+        this.window = window;
+    }
+
+    abstract void next1();
+
+    abstract void next2();
+
+    abstract void next3();
+
+    abstract void back();
+}
+
+class MainMenu extends Menus {
+    MainMenu(UIWindow window) {
+        super(window);
+
+        JButton startButton = new JButton("Start");
+        startButton.addActionListener(e -> next1());
+
+        JButton settingButton = new JButton("Settings");
+        settingButton.addActionListener(e -> next2());
+
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener(e -> back());
+
+        add(startButton);
+        add(settingButton);
+        add(exitButton);
+    }
+
+    @Override
+    void next1() {
+        window.setMenu(new StartMenu(window));
+    }
+
+    @Override
+    void next2() {
+        window.setMenu(new SettingsMenu(window));
+    }
+
+    @Override
+    void next3() {
+    }
+
+    @Override
+    void back() {
+        System.exit(0);
+    }
+
+}
+
+/*
+ * need to add the pitch with current settings loaded/saved next to buttons
+ * if time permits add the match settings (optional non-functional)
+ */
+class StartMenu extends Menus {
+    StartMenu(UIWindow window) {
+        super(window);
+
+        JButton startButton = new JButton("Start");
+        startButton.addActionListener(e -> next1());
+
+        JButton formationButton = new JButton("Formation");
+        formationButton.addActionListener(e -> next2());
+
+        JButton matchSettingsButton = new JButton("Match Settings");
+        matchSettingsButton.addActionListener(e -> next3());
+
+        JButton exitButton = new JButton("Back");
+        exitButton.addActionListener(e -> back());
+
+        add(startButton);
+        add(formationButton);
+        add(matchSettingsButton);
+        add(exitButton);
+    }
+
+    @Override
+    void next1() {
+        // window.setMenu(new SimWindow(window));
+    }
+
+    @Override
+    void next2() {
+        window.setMenu(new FormationMenu(window));
+    }
+
+    @Override
+    void next3() {
+        window.setMenu(new MatchSettingsMenu(window));
+    }
+
+    @Override
+    void back() {
+        window.setMenu(new MainMenu(window));
+    }
+
+}
+
+class SettingsMenu extends Menus {
+    SettingsMenu(UIWindow window) {
+        super(window);
+
+        JCheckBox debugButton = new JCheckBox("Debug Mode", window.getDebug());
+        debugButton.addActionListener(e -> window.setDebug(debugButton.isSelected()));
+
+        JButton exitButton = new JButton("Save");
+        exitButton.addActionListener(e -> back());
+
+        add(debugButton);
+        add(exitButton);
+    }
+
+    @Override
+    void next1() {
+    }
+
+    @Override
+    void next2() {
+
+    }
+
+    @Override
+    void next3() {
+
+    }
+
+    @Override
+    void back() {
+        window.setMenu(new MainMenu(window));
+    }
+}
+
+/*
+ * need to add the special buttons with arrows on them for the formation
+ * need to add the pitch next to the buttons displaying the current formation
+ * for each side
+ * need to add the swap side button and have it implemented
+ * 
+ */
+class FormationMenu extends Menus {
+    FormationMenu(UIWindow window) {
+        super(window);
+
+        JButton formationButton = new JButton("Formation");
+        formationButton.addActionListener(e -> next1());
+
+        JButton swapButton = new JButton("Swap Sides");
+        swapButton.addActionListener(e -> next2());
+
+        JButton exitButton = new JButton("Save");
+        exitButton.addActionListener(e -> back());
+
+        add(formationButton);
+        add(swapButton);
+        add(exitButton);
+    }
+
+    @Override
+    void next1() {
+    }
+
+    @Override
+    void next2() {
+
+    }
+
+    @Override
+    void next3() {
+
+    }
+
+    @Override
+    void back() {
+        window.setMenu(new StartMenu(window));
+    }
+}
+
+class MatchSettingsMenu extends Menus {
+    MatchSettingsMenu(UIWindow window) {
+        super(window);
+
+        JButton exitButton = new JButton("Save");
+        exitButton.addActionListener(e -> back());
+
+        add(exitButton);
+    }
+
+    @Override
+    void next1() {
+        // empty for the time being
+    }
+
+    @Override
+    void next2() {
+        // empty for the time being
+
+    }
+
+    @Override
+    void next3() {
+        // empty for the time being
+    }
+
+    @Override
+    void back() {
+        window.setMenu(new StartMenu(window));
+    }
+}
+
+// class SimWindow {
+
+// }
+
+// class SimWindowMenu {
+
+// }
+
 public class SimulationUI {
-
-    public class UIWindow {
-        JFrame frame;
-        Menus currentMenu;
-        boolean debugMode = false;
-
-        public UIWindow() {
-            frame = new JFrame("Soccer Simulation");
-            frame.setSize(700, 400);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setLocationRelativeTo(null);
-        }
-
-        void setMenu(Menus menu) {
-            currentMenu = menu;
-            frame.setContentPane(menu);
-            frame.revalidate();
-            frame.repaint();
-        }
-
-        void start() {
-            setMenu(new MainMenu(this));
-            frame.setVisible(true);
-        }
-
-        boolean getDebug(){
-            return this.debugMode;
-        }
-
-        void setDebug(boolean b){
-            this.debugMode = b;
-        }
-    }
-
-    abstract class Menus extends JPanel {
-        protected UIWindow window;
-
-        Menus(UIWindow window) {
-            this.window = window;
-        }
-
-        abstract void next1();
-
-        abstract void next2();
-
-        abstract void next3();
-
-        abstract void back();
-    }
-
-    public class MainMenu extends Menus {
-        MainMenu(UIWindow window) {
-            super(window);
-
-            JButton startButton = new JButton("Start");
-            startButton.addActionListener(e -> next1());
-
-            JButton settingButton = new JButton("Settings");
-            settingButton.addActionListener(e -> next2());
-
-            JButton exitButton = new JButton("exit");
-            exitButton.addActionListener(e -> back());
-
-            add(startButton);
-            add(settingButton);
-            add(exitButton);
-        }
-        
-        @Override
-        void next1() {
-            window.setMenu(new StartMenu(window));
-        }
-
-        @Override 
-        void next2(){
-            window.setMenu(new SettingsMenu(window));
-        }
-
-        @Override 
-        void next3(){
-        }
-
-        @Override
-        void back() {
-            System.exit(0);
-        }
-
-    }
-
-    /*
-    need to add the pitch with current settings loaded/saved next to buttons
-    if time permits add the match settings (optional non-functional)
-    */
-    public class StartMenu extends Menus {
-        StartMenu(UIWindow window) {
-            super(window);
-
-            JButton startButton = new JButton("Start");
-            startButton.addActionListener(e -> next1());
-
-            JButton formationButton = new JButton("Formation");
-            formationButton.addActionListener(e -> next2());
-
-            JButton matchSettingsButton = new JButton("Match Settings");
-            matchSettingsButton.addActionListener(e -> next3());
-
-            JButton exitButton = new JButton("exit");
-            exitButton.addActionListener(e -> back());
-
-            add(startButton);
-            add(formationButton);
-            add(matchSettingsButton);
-            add(exitButton);
-        }
-
-        @Override
-        void next1() {
-            window.setMenu(new SimWindow(window));
-        }
-
-        @Override
-        void next2() {
-            window.setMenu(new FormationMenu(window));
-        }
-
-        @Override 
-        void next3(){
-            window.setMenu(new MatchSettingsMenu(window));
-        }
-
-        @Override
-        void back() {
-            window.setMenu(new MainMenu(window));
-        }
-
-    }
-
-    public class SettingsMenu extends Menus {
-        SettingsMenu(UIWindow window) {
-            super(window);
-
-            JButton startButton = new JButton("Debug Mode");
-            startButton.addActionListener(e -> window.setDebug(true));
-
-            JButton exitButton = new JButton("Save");
-            exitButton.addActionListener(e -> back());
-
-            add(startButton);
-            add(exitButton);
-        }
-
-        @Override
-        void next1() {
-            // need to add like a check box here
-        }
-
-        @Override
-        void next2() {
-            
-        }
-
-        @Override
-        void next3() {
-            
-        }
-
-        @Override
-        void back() {
-            window.setMenu(new MainMenu(window));
-        }
-    }
-
-    /*
-    need to add the special buttons with arrows on them for the formation 
-    need to add the pitch next to the buttons displaying the current formation for each side
-    need to add the swap side button and have it implemented 
-    
-    */
-    public class FormationMenu extends Menus {
-        FormationMenu(UIWindow window) {
-            super(window);
-
-            JButton startButton = new JButton("Debug Mode");
-            startButton.addActionListener(e -> window.setDebug(true));
-
-            JButton exitButton = new JButton("Save");
-            exitButton.addActionListener(e -> back());
-
-            add(startButton);
-            add(exitButton);
-        }
-
-        @Override
-        void next1() {
-        }
-
-        @Override
-        void next2() {
-
-        }
-
-        @Override
-        void next3() {
-
-        }
-
-        @Override
-        void back() {
-            window.setMenu(new MainMenu(window));
-        }
-    }
-
-    public class MatchSettingsMenu extends Menus {
-        MatchSettingsMenu(UIWindow window) {
-            super(window);
-
-            JButton exitButton = new JButton("Save");
-            exitButton.addActionListener(e -> back());
-
-            add(exitButton);
-        }
-
-        @Override
-        void next1() {
-            // empty for the time being 
-        }
-
-        @Override
-        void next2() {
-            // empty for the time being
-
-        }
-
-        @Override
-        void next3() {
-            // empty for the time being
-        }
-
-        @Override
-        void back() {
-            window.setMenu(new StartMenu(window));
-        }
-    }
-
-    public class SimWindow {
-
-    }
-
-    public class SimWindowMenu {
-
-    }
 
     public static void main(String[] args) {
         new UIWindow().start();
