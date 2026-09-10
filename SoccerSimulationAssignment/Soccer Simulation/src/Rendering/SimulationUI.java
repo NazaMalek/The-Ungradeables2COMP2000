@@ -53,9 +53,11 @@ class UIWindow {
 
     public UIWindow() {
         frame = new JFrame("Soccer Simulation");
-        frame.setSize(700, 400);
+        frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        
+
     }
 
     void setMenu(Menus menu) {
@@ -63,6 +65,7 @@ class UIWindow {
         frame.setContentPane(menu);
         frame.revalidate();
         frame.repaint();
+        frame.getContentPane().setBackground(Color.decode("#737275"));
     }
 
     void start() {
