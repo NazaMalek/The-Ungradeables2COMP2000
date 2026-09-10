@@ -82,6 +82,8 @@ public class SimulationUI {
 
         abstract void next2();
 
+        abstract void next3();
+
         abstract void back();
     }
 
@@ -89,14 +91,16 @@ public class SimulationUI {
         MainMenu(UIWindow window) {
             super(window);
 
-            JButton startBtn = new JButton("Start");
-            startBtn.addActionListener(e -> next1());
-            JButton settingButton = new JButton("Settings");
-            settingButton.addActionListener(e -> next1());
-            JButton exitButton = new JButton("exit");
-            exitButton.addActionListener(e -> next1());
+            JButton startButton = new JButton("Start");
+            startButton.addActionListener(e -> next1());
 
-            add(startBtn);
+            JButton settingButton = new JButton("Settings");
+            settingButton.addActionListener(e -> next2());
+
+            JButton exitButton = new JButton("exit");
+            exitButton.addActionListener(e -> back());
+
+            add(startButton);
             add(settingButton);
             add(exitButton);
         }
@@ -111,6 +115,11 @@ public class SimulationUI {
             window.setMenu(new SettingsMenu(window));
         }
 
+        @Override 
+        void next3(){
+            // no third menu 
+        }
+
         @Override
         void back() {
             System.exit(0);
@@ -118,19 +127,59 @@ public class SimulationUI {
 
     }
 
-    public class StartMenu {
+    public class StartMenu extends Menus {
+        StartMenu(UIWindow window) {
+            super(window);
+
+            JButton startButton = new JButton("Start");
+            startButton.addActionListener(e -> next1());
+
+            JButton formationButton = new JButton("Formation");
+            formationButton.addActionListener(e -> next2());
+
+            JButton matchSettingsButton = new JButton("Match Settings");
+            matchSettingsButton.addActionListener(e -> next3());
+
+            JButton exitButton = new JButton("exit");
+            exitButton.addActionListener(e -> back());
+
+            add(startButton);
+            add(formationButton);
+            add(matchSettingsButton);
+            add(exitButton);
+        }
+
+        @Override
+        void next1() {
+            window.setMenu(new SimWindow(window));
+        }
+
+        @Override
+        void next2() {
+            window.setMenu(new FormationMenu(window));
+        }
+
+        @Override 
+        void next3(){
+            window.setMenu(new MatchSettingsMenu(window));
+        }
+
+        @Override
+        void back() {
+            window.setMenu(new MainMenu(window));
+        }
 
     }
 
-    public class SettingsMenu {
+    public class SettingsMenu extends Menus {
 
     }
 
-    public class FormationMenu {
+    public class FormationMenu extends Menus {
 
     }
 
-    public class MatchMenu {
+    public class MatchSettingsMenu extends Menus {
 
     }
 
