@@ -25,8 +25,6 @@ NEEDS:
                     - match time input selection  
                 - goal limit
                     - goal limit input box (sets a max number of goals to be scored for simulation to end)
-            - debug mode button
-                - makes it run in debug mode
             - save button locks in the current settings (also sends the user back, no default back button so the user always saves current formations)
 
         - start match button 
@@ -37,11 +35,66 @@ NEEDS:
                 - exit button 
         - return to main menu button 
     - settings button (doesnt have to be implemented settings)
+        - debug mode button
+                - makes it run in debug mode
+        - save button
     - exit button 
 
  */
 
+import java.awt.*;
+
+import javax.swing.JFrame;
+
 public class SimulationUI {
 
+    JFrame frame;
+
+    public SimulationUI() {
+        frame = new JFrame("Soccer Simulation");
+        frame.setSize(700, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        showMainMenu(); // start here
+        frame.setVisible(true);
+    }
+
+
+
+    abstract class Menus{
+        
+    }
+
+    public class MainMenu {
+
+    }
+
+    public class StartMenu {
+
+    }
+
+    public class SettingsMenu {
+
+    }
+
+    public class FormationMenu {
+
+    }
+
+    public class MatchMenu {
+
+    }
+
+    public class SimWindow {
+
+    }
+
+    public class SimWindowMenu {
+
+    }
+
+    public static void main(String[] args) {
+        UIWindow win = new UIWindow();
+        win.drawWindow();
+    }
 
 }
