@@ -52,7 +52,7 @@ class UIWindow {
     boolean debugMode = false;
     int width = 700;
     int height = 400;
-    String backgroundColour = "#208026";
+    String backgroundColour = "#329632";
     String btnColour = "#404143";
 
     public UIWindow() {
@@ -60,7 +60,6 @@ class UIWindow {
         frame.setSize(width, height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        
 
     }
 
@@ -86,13 +85,14 @@ class UIWindow {
         frame.setTitle("Soccer Simulation" + debugString());
     }
 
-    private String debugString (){
-        if(this.getDebug() == true) return " (Debug)";
+    private String debugString() {
+        if (this.getDebug() == true)
+            return " (Debug)";
 
         return "";
     }
 
-    void displayButtons(JButton[] buttons){
+    void displayButtons(JButton[] buttons) {
         for (JButton btn : buttons) {
             btn.setBackground(Color.decode(btnColour));
             btn.setForeground(Color.WHITE);
@@ -112,6 +112,47 @@ class UIWindow {
             btn.setFocusPainted(false);
             btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         }
+    }
+
+    // just copied this from SoccerPitch class and fixed the magic numbers for a
+    // background graphic
+    void backgroundGraphic(Graphics g) {
+
+        // Pitch
+        g.setColor(new Color(50, 150, 50));
+        g.fillRect(0, 0, width, height);
+
+        g.setColor(Color.WHITE);
+
+        // Outer border
+        g.drawRect(0, 0, width, height);
+
+        // Halfway line
+        g.drawLine(width / 2, 0, width / 2, height);
+
+        // Centre circle
+        int circleRadius = 60;
+        g.drawOval(width / 2 - circleRadius, height / 2 - circleRadius, circleRadius * 2, circleRadius * 2);
+
+        // Centre spot
+        g.fillOval(width / 2 - 4, height / 2 - 4, 8, 8);
+
+        // Penalty areas
+        int penaltyWidth = 100, penaltyHeight = 200;
+        int penaltyY = (height - penaltyHeight) / 2;
+        g.drawRect(0, penaltyY, penaltyWidth, penaltyHeight);
+        g.drawRect(width - penaltyWidth, penaltyY, penaltyWidth, penaltyHeight);
+
+        // Goals
+        int goalWidth = 50, goalHeight = 100;
+        int goalY = (height - goalHeight) / 2;
+        g.drawRect(0, goalY, goalWidth, goalHeight);
+        g.drawRect(width - goalWidth, goalY, goalWidth, goalHeight);
+
+        // Penalty spots
+        int spotOffset = 79;
+        g.fillOval(spotOffset - 4, height / 2 - 4, 8, 8);
+        g.fillOval(width - spotOffset - 4, height / 2 - 4, 8, 8);
     }
 }
 
@@ -149,13 +190,19 @@ class MainMenu extends Menus {
 
         window.displayButtons(buttons);
 
-        startButton.setBounds(window.width/2 - 125, window.height / 2 - 100, 250, 50);
+        startButton.setBounds(window.width / 2 - 125, window.height / 2 - 100, 250, 50);
         settingsButton.setBounds(window.width / 2 - 125, window.height / 2 - 30, 250, 50);
         exitButton.setBounds(window.width / 2 - 125, window.height / 2 + 40, 250, 50);
 
         add(startButton);
         add(settingsButton);
         add(exitButton);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        window.backgroundGraphic(g);
     }
 
     @Override
@@ -181,7 +228,6 @@ class MainMenu extends Menus {
 
 /*
  * need to add the pitch with current settings loaded/saved next to buttons
- * if time permits add the match settings (optional non-functional)
  */
 class StartMenu extends Menus {
     StartMenu(UIWindow window) {
@@ -206,7 +252,7 @@ class StartMenu extends Menus {
 
         startButton.setBounds(window.width / 4 - 125, window.height / 2 - 140, 250, 50);
         formationButton.setBounds(window.width / 4 - 125, window.height / 2 - 70, 250, 50);
-        matchSettingsButton.setBounds(window.width / 4 - 125, window.height / 2 , 250, 50);
+        matchSettingsButton.setBounds(window.width / 4 - 125, window.height / 2, 250, 50);
         exitButton.setBounds(window.width / 4 - 125, window.height / 2 + 70, 250, 50);
 
         add(startButton);
@@ -217,7 +263,7 @@ class StartMenu extends Menus {
 
     @Override
     void next1() {
-        // window.setMenu(new SimWindow(window));
+        window.setMenu(new SimWindowMenu(window));
     }
 
     @Override
@@ -248,11 +294,10 @@ class SettingsMenu extends Menus {
         JButton exitButton = new JButton("Save");
         exitButton.addActionListener(e -> back());
 
-        JButton[] buttons = {exitButton};
-        JCheckBox[] boxes = {debugButton };
+        JButton[] buttons = { exitButton };
+        JCheckBox[] boxes = { debugButton };
         window.displayCheckBox(boxes);
         window.displayButtons(buttons);
-        
 
         debugButton.setBounds(window.width / 2 - 125, window.height / 2 - 100, 250, 50);
         exitButton.setBounds(window.width / 2 - 125, window.height / 2 - 30, 250, 50);
@@ -302,7 +347,7 @@ class FormationMenu extends Menus {
         JButton exitButton = new JButton("Save");
         exitButton.addActionListener(e -> back());
 
-        JButton[] buttons = {formationButton, swapButton, exitButton };
+        JButton[] buttons = { formationButton, swapButton, exitButton };
 
         window.displayButtons(buttons);
 
@@ -343,12 +388,11 @@ class MatchSettingsMenu extends Menus {
         JButton exitButton = new JButton("Save");
         exitButton.addActionListener(e -> back());
 
-        JButton[] buttons = {exitButton };
+        JButton[] buttons = { exitButton };
 
         window.displayButtons(buttons);
 
         exitButton.setBounds(window.width / 2 - 125, window.height / 2 - 100, 250, 50);
-       
 
         add(exitButton);
     }
@@ -379,9 +423,49 @@ class MatchSettingsMenu extends Menus {
 
 // }
 
-// class SimWindowMenu {
+class SimWindowMenu extends Menus {
+    SimWindowMenu(UIWindow window) {
+        super(window);
+        setLayout(null);
 
-// }
+        JButton resumeButton = new JButton("Resume");
+        resumeButton.addActionListener(e -> back());
+
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener(e -> back());
+
+        JButton[] buttons = { resumeButton, exitButton };
+
+        window.displayButtons(buttons);
+
+        resumeButton.setBounds(window.width / 2 - 75, window.height / 2 - 100, 150, 50);
+        exitButton.setBounds(window.width / 2 - 75, window.height / 2 - 30, 150, 50);
+
+        add(resumeButton);
+        add(exitButton);
+    }
+
+    @Override
+    void next1() {
+        // empty for the time being
+    }
+
+    @Override
+    void next2() {
+        // empty for the time being
+
+    }
+
+    @Override
+    void next3() {
+        // empty for the time being
+    }
+
+    @Override
+    void back() {
+        window.setMenu(new StartMenu(window));
+    }
+}
 
 public class SimulationUI {
 
