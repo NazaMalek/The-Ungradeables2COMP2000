@@ -131,47 +131,7 @@ class UIWindow{
         }
     }
 
-    // just copied this from SoccerPitch class and fixed the magic numbers for a
-    // background graphic
-    void backgroundGraphic(Graphics g) {
-
-        // Pitch
-        g.setColor(new Color(50, 150, 50));
-        g.fillRect(0, 0, ScreenSize.width, ScreenSize.height);
-
-        g.setColor(Color.WHITE);
-
-        // Outer border
-        g.drawRect(0, 0, ScreenSize.width, ScreenSize.height);
-
-        // Halfway line
-        g.drawLine(ScreenSize.width / 2, 0, ScreenSize.width / 2, ScreenSize.height);
-
-        // Centre circle
-        int circleRadius = 60;
-        g.drawOval(ScreenSize.width / 2 - circleRadius, 
-                ScreenSize.height / 2 - circleRadius, circleRadius * 2, circleRadius * 2);
-
-        // Centre spot
-        g.fillOval(ScreenSize.width / 2 - 4, ScreenSize.height / 2 - 4, 8, 8);
-
-        // Penalty areas
-        int penaltyWidth = 100, penaltyHeight = 200;
-        int penaltyY = (ScreenSize.height - penaltyHeight) / 2;
-        g.drawRect(0, penaltyY, penaltyWidth, penaltyHeight);
-        g.drawRect(ScreenSize.width - penaltyWidth, penaltyY, penaltyWidth, penaltyHeight);
-
-        // Goals
-        int goalWidth = 50, goalHeight = 100;
-        int goalY = (ScreenSize.height - goalHeight) / 2;
-        g.drawRect(0, goalY, goalWidth, goalHeight);
-        g.drawRect(ScreenSize.width - goalWidth, goalY, goalWidth, goalHeight);
-
-        // Penalty spots
-        int spotOffset = 79;
-        g.fillOval(spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
-        g.fillOval(ScreenSize.width - spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
-    }
+    
 }
 
 abstract class Menus extends JPanel {
@@ -194,6 +154,7 @@ class MainMenu extends Menus {
     MainMenu(UIWindow window) {
         super(window);
         setLayout(null);
+        window.pitch.setBounds(0, 0, 700, 400);
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener(e -> next1());
@@ -215,13 +176,10 @@ class MainMenu extends Menus {
         add(startButton);
         add(settingsButton);
         add(exitButton);
+        add(window.pitch);
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        window.backgroundGraphic(g);
-    }
+    
 
     @Override
     void next1() {
@@ -281,7 +239,7 @@ class StartMenu extends Menus {
 
     @Override
     void next1() {
-        window.setMenu(new SimWindowMenu(window));
+        window.setMenu(new SimWindow(window));
     }
 
     @Override
@@ -478,9 +436,49 @@ class MatchSettingsMenu extends Menus {
     }
 }
 
-// class SimWindow {
+ class SimWindow extends Menus{
+     SimWindow(UIWindow window) {
+        super(window);
+        setLayout(null);
+        window.pitch.setBounds(0, 0, 700, 400);
 
-// }
+        JButton menuButton = new JButton("Menu");
+        menuButton.addActionListener(e -> back());
+
+        JButton[] buttons = { menuButton };
+
+        window.displayButtons(buttons);
+
+        menuButton.setBounds(ScreenSize.width / 5 - 125, ScreenSize.height - 385, 80, 40);
+
+        add(menuButton);
+        add(window.pitch);
+
+    }
+
+  
+
+     @Override
+     void next1() {
+         // empty for the time being
+     }
+
+     @Override
+     void next2() {
+         // empty for the time being
+
+     }
+
+     @Override
+     void next3() {
+         // empty for the time being
+     }
+
+     @Override
+     void back() {
+         window.setMenu(new SimWindowMenu(window));
+     }
+ }
 
 class SimWindowMenu extends Menus {
     SimWindowMenu(UIWindow window) {
@@ -488,7 +486,7 @@ class SimWindowMenu extends Menus {
         setLayout(null);
 
         JButton resumeButton = new JButton("Resume");
-        resumeButton.addActionListener(e -> back());
+        resumeButton.addActionListener(e -> next1());
 
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> back());
@@ -506,7 +504,7 @@ class SimWindowMenu extends Menus {
 
     @Override
     void next1() {
-        // empty for the time being
+        window.setMenu(new SimWindow(window));
     }
 
     @Override
