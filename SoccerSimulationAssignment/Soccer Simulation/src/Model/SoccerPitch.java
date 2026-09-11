@@ -1,34 +1,16 @@
 package Model;
+
 import java.awt.*;
 import javax.swing.*;
 
 import Rendering.ScreenSize;
 
 public class SoccerPitch extends JPanel {
-    
-
-    // Create the players
-    private Player[] players;
 
     public SoccerPitch() {
 
-        setPreferredSize(new Dimension(700, 400));
-        players = new Player[] {
+        setPreferredSize(new Dimension(ScreenSize.width, ScreenSize.height));
 
-            // Blue team
-            new Player(100, 200, 1, Color.BLUE),
-            new Player(180, 100, 2, Color.BLUE),
-            new Player(180, 300, 3, Color.BLUE),
-            new Player(280, 150, 4, Color.BLUE),
-            new Player(280, 250, 5, Color.BLUE),
-
-            // Red team
-            new Player(600, 200, 1, Color.RED),
-            new Player(520, 100, 2, Color.RED),
-            new Player(520, 300, 3, Color.RED),
-            new Player(420, 150, 4, Color.RED),
-            new Player(420, 250, 5, Color.RED)
-        };
     }
 
     @Override
@@ -48,7 +30,7 @@ public class SoccerPitch extends JPanel {
 
         // Centre circle
         int circleRadius = 60;
-        g.drawOval(ScreenSize.width / 2 - circleRadius, 
+        g.drawOval(ScreenSize.width / 2 - circleRadius,
                 ScreenSize.height / 2 - circleRadius, circleRadius * 2, circleRadius * 2);
 
         // Centre spot
@@ -70,33 +52,20 @@ public class SoccerPitch extends JPanel {
         int spotOffset = 79;
         g.fillOval(spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
         g.fillOval(ScreenSize.width - spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
-        
-        for (Player player : players) {
-            player.draw(g);
-        }
+
     }
 
-    public Player[] getPlayers(){
-        return players;
-    }
+    // public static void main(String[] args) {
 
-    public void setPlayers(Player[] players){
-        this.players = players;
-        repaint();
-    }
+    //     JFrame frame = new JFrame("Soccer Simulation");
 
+    //     SoccerPitch pitch = new SoccerPitch();
 
-    public static void main(String[] args) {
+    //     frame.add(pitch);
+    //     frame.pack();
 
-        JFrame frame = new JFrame("Soccer Simulation");
-
-        SoccerPitch pitch = new SoccerPitch();
-
-        frame.add(pitch);
-        frame.pack();
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
+    //     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    //     frame.setLocationRelativeTo(null);
+    //     frame.setVisible(true);
+    // }
 }

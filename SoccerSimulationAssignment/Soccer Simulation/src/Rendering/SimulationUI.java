@@ -48,7 +48,7 @@ import javax.swing.*;
 
 import Model.SoccerPitch;
 
-class UIWindow{
+class UIWindow {
     JFrame frame;
     Menus currentMenu;
     CircleList<String> formationCircle;
@@ -131,49 +131,11 @@ class UIWindow{
         }
     }
 
-    // just copied this from SoccerPitch class and fixed the magic numbers for a
-    // background graphic
-    void backgroundGraphic(Graphics g) {
-
-        // Pitch
-        g.setColor(new Color(50, 150, 50));
-        g.fillRect(0, 0, ScreenSize.width, ScreenSize.height);
-
-        g.setColor(Color.WHITE);
-
-        // Outer border
-        g.drawRect(0, 0, ScreenSize.width, ScreenSize.height);
-
-        // Halfway line
-        g.drawLine(ScreenSize.width / 2, 0, ScreenSize.width / 2, ScreenSize.height);
-
-        // Centre circle
-        int circleRadius = 60;
-        g.drawOval(ScreenSize.width / 2 - circleRadius, 
-                ScreenSize.height / 2 - circleRadius, circleRadius * 2, circleRadius * 2);
-
-        // Centre spot
-        g.fillOval(ScreenSize.width / 2 - 4, ScreenSize.height / 2 - 4, 8, 8);
-
-        // Penalty areas
-        int penaltyWidth = 100, penaltyHeight = 200;
-        int penaltyY = (ScreenSize.height - penaltyHeight) / 2;
-        g.drawRect(0, penaltyY, penaltyWidth, penaltyHeight);
-        g.drawRect(ScreenSize.width - penaltyWidth, penaltyY, penaltyWidth, penaltyHeight);
-
-        // Goals
-        int goalWidth = 50, goalHeight = 100;
-        int goalY = (ScreenSize.height - goalHeight) / 2;
-        g.drawRect(0, goalY, goalWidth, goalHeight);
-        g.drawRect(ScreenSize.width - goalWidth, goalY, goalWidth, goalHeight);
-
-        // Penalty spots
-        int spotOffset = 79;
-        g.fillOval(spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
-        g.fillOval(ScreenSize.width - spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
-    }
 }
 
+/*
+ * DONE
+ */
 abstract class Menus extends JPanel {
     protected UIWindow window;
 
@@ -190,10 +152,14 @@ abstract class Menus extends JPanel {
     abstract void back();
 }
 
+/*
+ * DONE
+ */
 class MainMenu extends Menus {
     MainMenu(UIWindow window) {
         super(window);
         setLayout(null);
+        window.pitch.setBounds(0, 0, 700, 400);
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener(e -> next1());
@@ -215,12 +181,7 @@ class MainMenu extends Menus {
         add(startButton);
         add(settingsButton);
         add(exitButton);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        window.backgroundGraphic(g);
+        add(window.pitch);
     }
 
     @Override
@@ -245,7 +206,7 @@ class MainMenu extends Menus {
 }
 
 /*
- * need to add the pitch with current settings loaded/saved next to buttons
+ * NEED To add pitch with current saved settings and formations
  */
 class StartMenu extends Menus {
     StartMenu(UIWindow window) {
@@ -281,7 +242,7 @@ class StartMenu extends Menus {
 
     @Override
     void next1() {
-        window.setMenu(new SimWindowMenu(window));
+        window.setMenu(new SimWindow(window));
     }
 
     @Override
@@ -301,6 +262,10 @@ class StartMenu extends Menus {
 
 }
 
+/*
+ * NEEDS, to have the debug output make a pop-up window that prints the log of
+ * everything that happens
+ */
 class SettingsMenu extends Menus {
     SettingsMenu(UIWindow window) {
         super(window);
@@ -345,9 +310,8 @@ class SettingsMenu extends Menus {
 }
 
 /*
- * need to add the pitch next to the buttons displaying the current formation
- * for each side
- * 
+ * NEED to add the dynamic soccer pitch that changes with formation and sides
+ * DEPENDENT on how and what match needs and vertical field
  */
 class FormationMenu extends Menus {
     CircleList<String> formationCircle;
@@ -439,6 +403,10 @@ class FormationMenu extends Menus {
     }
 }
 
+/*
+ * DONE, for this implementation cycle next one need to add the actual changable
+ * settings
+ */
 class MatchSettingsMenu extends Menus {
     MatchSettingsMenu(UIWindow window) {
         super(window);
@@ -478,30 +446,30 @@ class MatchSettingsMenu extends Menus {
     }
 }
 
-// class SimWindow {
-
-// }
-
-class SimWindowMenu extends Menus {
-    SimWindowMenu(UIWindow window) {
+/*
+ * NEEDS, this is temporary set up need to make it play the actual match
+ * simulation but
+ * i got to build that first so this is just a place holder
+ * 
+ */
+class SimWindow extends Menus {
+    SimWindow(UIWindow window) {
         super(window);
         setLayout(null);
+        window.pitch.setBounds(0, 0, 700, 400);
 
-        JButton resumeButton = new JButton("Resume");
-        resumeButton.addActionListener(e -> back());
+        JButton menuButton = new JButton("Menu");
+        menuButton.addActionListener(e -> back());
 
-        JButton exitButton = new JButton("Exit");
-        exitButton.addActionListener(e -> back());
-
-        JButton[] buttons = { resumeButton, exitButton };
+        JButton[] buttons = { menuButton };
 
         window.displayButtons(buttons);
 
-        resumeButton.setBounds(ScreenSize.width / 2 - 75, ScreenSize.height / 2 - 100, 150, 50);
-        exitButton.setBounds(ScreenSize.width / 2 - 75, ScreenSize.height / 2 - 30, 150, 50);
+        menuButton.setBounds(ScreenSize.width / 5 - 125, ScreenSize.height - 385, 80, 40);
 
-        add(resumeButton);
-        add(exitButton);
+        add(menuButton);
+        add(window.pitch);
+
     }
 
     @Override
@@ -522,10 +490,62 @@ class SimWindowMenu extends Menus {
 
     @Override
     void back() {
+        window.setMenu(new SimWindowMenu(window));
+    }
+}
+
+/*
+ * NEEDS to pause the simulation then start it again just go to test it does
+ * that after i implement the match class
+ * DEPENDENT on MATCH class
+ */
+class SimWindowMenu extends Menus {
+    SimWindowMenu(UIWindow window) {
+        super(window);
+        setLayout(null);
+
+        JButton resumeButton = new JButton("Resume");
+        resumeButton.addActionListener(e -> next1());
+
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener(e -> back());
+
+        JButton[] buttons = { resumeButton, exitButton };
+
+        window.displayButtons(buttons);
+
+        resumeButton.setBounds(ScreenSize.width / 2 - 75, ScreenSize.height / 2 - 100, 150, 50);
+        exitButton.setBounds(ScreenSize.width / 2 - 75, ScreenSize.height / 2 - 30, 150, 50);
+
+        add(resumeButton);
+        add(exitButton);
+    }
+
+    @Override
+    void next1() {
+        window.setMenu(new SimWindow(window));
+    }
+
+    @Override
+    void next2() {
+        // empty for the time being
+
+    }
+
+    @Override
+    void next3() {
+        // empty for the time being
+    }
+
+    @Override
+    void back() {
         window.setMenu(new StartMenu(window));
     }
 }
 
+/*
+ * DONE
+ */
 class CircleNode<T> {
     T value;
     CircleNode<T> next;
@@ -536,6 +556,9 @@ class CircleNode<T> {
     }
 }
 
+/*
+ * DONE
+ */
 class CircleList<T> {
     private CircleNode<T> current;
 
@@ -570,7 +593,15 @@ class CircleList<T> {
     }
 }
 
-
+/*
+ * the vertical pitch will just be for display while the important information
+ * like the formation and sides will be saved into the actual pitch, the
+ * formations are hard coded so i can just have an array for each postion on the
+ * field 1 for goalkeeper, 5 for every other postion adn then just add players
+ * to those arrays and then just hard code arrays or even easier just an if
+ * statement that prints one side if the custom circle list value is said
+ * formation then just have it draw the players on the field accordingly
+ */
 
 public class SimulationUI {
 
