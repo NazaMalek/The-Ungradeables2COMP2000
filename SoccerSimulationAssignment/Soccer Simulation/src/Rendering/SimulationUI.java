@@ -48,7 +48,7 @@ import javax.swing.*;
 
 import Model.SoccerPitch;
 
-class UIWindow{
+class UIWindow {
     JFrame frame;
     Menus currentMenu;
     CircleList<String> formationCircle;
@@ -131,9 +131,11 @@ class UIWindow{
         }
     }
 
-    
 }
 
+/*
+ * DONE
+ */
 abstract class Menus extends JPanel {
     protected UIWindow window;
 
@@ -150,6 +152,9 @@ abstract class Menus extends JPanel {
     abstract void back();
 }
 
+/*
+ * DONE
+ */
 class MainMenu extends Menus {
     MainMenu(UIWindow window) {
         super(window);
@@ -179,8 +184,6 @@ class MainMenu extends Menus {
         add(window.pitch);
     }
 
-    
-
     @Override
     void next1() {
         window.setMenu(new StartMenu(window));
@@ -203,7 +206,7 @@ class MainMenu extends Menus {
 }
 
 /*
- * need to add the pitch with current settings loaded/saved next to buttons
+ * NEED To add pitch with current saved settings and formations
  */
 class StartMenu extends Menus {
     StartMenu(UIWindow window) {
@@ -259,6 +262,10 @@ class StartMenu extends Menus {
 
 }
 
+/*
+ * NEEDS, to have the debug output make a pop-up window that prints the log of
+ * everything that happens
+ */
 class SettingsMenu extends Menus {
     SettingsMenu(UIWindow window) {
         super(window);
@@ -303,9 +310,8 @@ class SettingsMenu extends Menus {
 }
 
 /*
- * need to add the pitch next to the buttons displaying the current formation
- * for each side
- * 
+ * NEED to add the dynamic soccer pitch that changes with formation and sides
+ * DEPENDENT on how and what match needs and vertical field
  */
 class FormationMenu extends Menus {
     CircleList<String> formationCircle;
@@ -397,6 +403,10 @@ class FormationMenu extends Menus {
     }
 }
 
+/*
+ * DONE, for this implementation cycle next one need to add the actual changable
+ * settings
+ */
 class MatchSettingsMenu extends Menus {
     MatchSettingsMenu(UIWindow window) {
         super(window);
@@ -436,8 +446,14 @@ class MatchSettingsMenu extends Menus {
     }
 }
 
- class SimWindow extends Menus{
-     SimWindow(UIWindow window) {
+/*
+ * NEEDS, this is temporary set up need to make it play the actual match
+ * simulation but
+ * i got to build that first so this is just a place holder
+ * 
+ */
+class SimWindow extends Menus {
+    SimWindow(UIWindow window) {
         super(window);
         setLayout(null);
         window.pitch.setBounds(0, 0, 700, 400);
@@ -456,30 +472,33 @@ class MatchSettingsMenu extends Menus {
 
     }
 
-  
+    @Override
+    void next1() {
+        // empty for the time being
+    }
 
-     @Override
-     void next1() {
-         // empty for the time being
-     }
+    @Override
+    void next2() {
+        // empty for the time being
 
-     @Override
-     void next2() {
-         // empty for the time being
+    }
 
-     }
+    @Override
+    void next3() {
+        // empty for the time being
+    }
 
-     @Override
-     void next3() {
-         // empty for the time being
-     }
+    @Override
+    void back() {
+        window.setMenu(new SimWindowMenu(window));
+    }
+}
 
-     @Override
-     void back() {
-         window.setMenu(new SimWindowMenu(window));
-     }
- }
-
+/*
+ * NEEDS to pause the simulation then start it again just go to test it does
+ * that after i implement the match class
+ * DEPENDENT on MATCH class
+ */
 class SimWindowMenu extends Menus {
     SimWindowMenu(UIWindow window) {
         super(window);
@@ -524,6 +543,9 @@ class SimWindowMenu extends Menus {
     }
 }
 
+/*
+ * DONE
+ */
 class CircleNode<T> {
     T value;
     CircleNode<T> next;
@@ -534,6 +556,9 @@ class CircleNode<T> {
     }
 }
 
+/*
+ * DONE
+ */
 class CircleList<T> {
     private CircleNode<T> current;
 
@@ -568,7 +593,15 @@ class CircleList<T> {
     }
 }
 
-
+/*
+ * the vertical pitch will just be for display while the important information
+ * like the formation and sides will be saved into the actual pitch, the
+ * formations are hard coded so i can just have an array for each postion on the
+ * field 1 for goalkeeper, 5 for every other postion adn then just add players
+ * to those arrays and then just hard code arrays or even easier just an if
+ * statement that prints one side if the custom circle list value is said
+ * formation then just have it draw the players on the field accordingly
+ */
 
 public class SimulationUI {
 
