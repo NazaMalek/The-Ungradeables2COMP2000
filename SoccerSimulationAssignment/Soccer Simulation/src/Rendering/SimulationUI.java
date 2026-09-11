@@ -49,6 +49,8 @@ import javax.swing.*;
 class UIWindow {
     JFrame frame;
     Menus currentMenu;
+    CircleList<String> formationCircle;
+    CircleList<String> sidesCircle;
     boolean debugMode = false;
     int width = 700;
     int height = 400;
@@ -60,6 +62,8 @@ class UIWindow {
         frame.setSize(width, height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        formationCircle = new CircleList<>(new String[] { "4-4-2", "4-3-3", "3-5-2" });
+        sidesCircle = new CircleList<>(new String[] { "Home", "Away" });
 
     }
 
@@ -103,14 +107,25 @@ class UIWindow {
         }
     }
 
-    void displayCheckBox(JCheckBox[] boxs) {
-        for (JCheckBox btn : boxs) {
-            btn.setBackground(Color.decode(btnColour));
-            btn.setForeground(Color.WHITE);
-            btn.setFont(new Font("Lexend", Font.BOLD, 16));
-            btn.setBorderPainted(false);
-            btn.setFocusPainted(false);
-            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    void displayCheckBox(JCheckBox[] boxes) {
+        for (JCheckBox cbx : boxes) {
+            cbx.setBackground(Color.decode(btnColour));
+            cbx.setForeground(Color.WHITE);
+            cbx.setFont(new Font("Lexend", Font.BOLD, 16));
+            cbx.setBorderPainted(false);
+            cbx.setFocusPainted(false);
+            cbx.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
+    }
+
+    void displayLabel(JLabel[] labels) {
+        for (JLabel lbl : labels) {
+            lbl.setBackground(Color.decode(btnColour));
+            lbl.setForeground(Color.WHITE);
+            lbl.setFont(new Font("Lexend", Font.BOLD, 16));
+            lbl.setOpaque(true);
+            lbl.setHorizontalAlignment(JLabel.CENTER);
+            lbl.setVerticalAlignment(JLabel.CENTER);
         }
     }
 
@@ -334,29 +349,76 @@ class SettingsMenu extends Menus {
  * 
  */
 class FormationMenu extends Menus {
+    CircleList<String> formationCircle;
+    CircleList<String> sidesCircle;
+
+
     FormationMenu(UIWindow window) {
         super(window);
         setLayout(null);
 
-        JButton formationButton = new JButton("Change Formation");
-        formationButton.addActionListener(e -> next1());
+        this.formationCircle = window.formationCircle;
+        this.sidesCircle = window.sidesCircle;
+        JButton formPrevBtn = new JButton("<");
+        JButton formNextBtn = new JButton(">");
 
-        JButton swapButton = new JButton("Swap Sides");
-        swapButton.addActionListener(e -> next2());
+        JLabel formationLabel = new JLabel(formationCircle.getCurrent().toString());
+
+        formPrevBtn.addActionListener(e -> {
+            formationCircle.previous();
+            formationLabel.setText(formationCircle.getCurrent().toString());
+        });
+
+        formNextBtn.addActionListener(e -> {
+            formationCircle.next();
+            formationLabel.setText(formationCircle.getCurrent().toString());
+        });
+
+        
+
+        JButton swapPrevBtn = new JButton("<");
+        JButton swapNextBtn = new JButton(">");
+
+        JLabel swapLabel = new JLabel(sidesCircle.getCurrent().toString());
+
+        swapPrevBtn.addActionListener(e -> {
+            sidesCircle.previous();
+            swapLabel.setText(sidesCircle.getCurrent().toString());
+        });
+
+        swapNextBtn.addActionListener(e -> {
+            sidesCircle.next();
+            swapLabel.setText(sidesCircle.getCurrent().toString());
+        });
+        
 
         JButton exitButton = new JButton("Save");
         exitButton.addActionListener(e -> back());
 
-        JButton[] buttons = { formationButton, swapButton, exitButton };
+        JButton[] buttons = { formPrevBtn, formNextBtn, swapPrevBtn, swapNextBtn, exitButton };
+        JLabel[] labels = { formationLabel, swapLabel };
+        window.displayLabel(labels);
 
         window.displayButtons(buttons);
 
-        formationButton.setBounds(window.width / 4 - 125, window.height / 2 - 140, 250, 50);
-        swapButton.setBounds(window.width / 4 - 125, window.height / 2 - 70, 250, 50);
+        formPrevBtn.setBounds(window.width / 4 - 125, window.height / 2 - 140, 45, 50);
+        formationLabel.setBounds(window.width / 4 - 75, window.height / 2 - 140, 150, 50);
+        formNextBtn.setBounds(window.width / 4 + 80, window.height / 2 - 140, 45, 50);
+
+        swapPrevBtn.setBounds(window.width / 4 - 125, window.height / 2 - 70, 45, 50);
+        swapLabel.setBounds(window.width / 4 - 75, window.height / 2 - 70, 150, 50);
+        swapNextBtn.setBounds(window.width / 4 + 80, window.height / 2 - 70, 45, 50);
+
         exitButton.setBounds(window.width / 4 - 125, window.height / 2, 250, 50);
 
-        add(formationButton);
-        add(swapButton);
+        add(formPrevBtn);
+        add(formationLabel);
+        add(formNextBtn);
+
+        add(swapPrevBtn);
+        add(swapLabel);
+        add(swapNextBtn);
+
         add(exitButton);
     }
 
@@ -464,6 +526,50 @@ class SimWindowMenu extends Menus {
     @Override
     void back() {
         window.setMenu(new StartMenu(window));
+    }
+}
+
+class CircleNode<T> {
+    T value;
+    CircleNode<T> next;
+    CircleNode<T> prev;
+
+    CircleNode(T value) {
+        this.value = value;
+    }
+}
+
+class CircleList<T> {
+    private CircleNode<T> current;
+
+    CircleList(T[] values) {
+        CircleNode<T> start = new CircleNode<T>(values[0]);
+        CircleNode<T> prevNode = start;
+
+        for (int i = 1; i < values.length; i++) {
+            CircleNode<T> node = new CircleNode<>(values[i]);
+            prevNode.next = node;
+            node.prev = prevNode;
+            prevNode = node;
+        }
+
+        prevNode.next = start;
+        start.prev = prevNode;
+
+        this.current = start;
+
+    }
+
+    T getCurrent() {
+        return current.value;
+    }
+
+    void next() {
+        this.current = this.current.next;
+    }
+
+    void previous() {
+        this.current = this.current.prev;
     }
 }
 
