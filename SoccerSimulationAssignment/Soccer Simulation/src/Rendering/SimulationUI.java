@@ -46,24 +46,26 @@ package Rendering;
 import java.awt.*;
 import javax.swing.*;
 
-class UIWindow {
+import Model.SoccerPitch;
+
+class UIWindow{
     JFrame frame;
     Menus currentMenu;
     CircleList<String> formationCircle;
     CircleList<String> sidesCircle;
+    SoccerPitch pitch;
     boolean debugMode = false;
-    int width = 700;
-    int height = 400;
     String backgroundColour = "#329632";
     String btnColour = "#404143";
 
     public UIWindow() {
         frame = new JFrame("Soccer Simulation");
-        frame.setSize(width, height);
+        frame.setSize(ScreenSize.width, ScreenSize.height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         formationCircle = new CircleList<>(new String[] { "4-4-2", "4-3-3", "3-5-2" });
         sidesCircle = new CircleList<>(new String[] { "Home", "Away" });
+        pitch = new SoccerPitch();
 
     }
 
@@ -135,39 +137,40 @@ class UIWindow {
 
         // Pitch
         g.setColor(new Color(50, 150, 50));
-        g.fillRect(0, 0, width, height);
+        g.fillRect(0, 0, ScreenSize.width, ScreenSize.height);
 
         g.setColor(Color.WHITE);
 
         // Outer border
-        g.drawRect(0, 0, width, height);
+        g.drawRect(0, 0, ScreenSize.width, ScreenSize.height);
 
         // Halfway line
-        g.drawLine(width / 2, 0, width / 2, height);
+        g.drawLine(ScreenSize.width / 2, 0, ScreenSize.width / 2, ScreenSize.height);
 
         // Centre circle
         int circleRadius = 60;
-        g.drawOval(width / 2 - circleRadius, height / 2 - circleRadius, circleRadius * 2, circleRadius * 2);
+        g.drawOval(ScreenSize.width / 2 - circleRadius, 
+                ScreenSize.height / 2 - circleRadius, circleRadius * 2, circleRadius * 2);
 
         // Centre spot
-        g.fillOval(width / 2 - 4, height / 2 - 4, 8, 8);
+        g.fillOval(ScreenSize.width / 2 - 4, ScreenSize.height / 2 - 4, 8, 8);
 
         // Penalty areas
         int penaltyWidth = 100, penaltyHeight = 200;
-        int penaltyY = (height - penaltyHeight) / 2;
+        int penaltyY = (ScreenSize.height - penaltyHeight) / 2;
         g.drawRect(0, penaltyY, penaltyWidth, penaltyHeight);
-        g.drawRect(width - penaltyWidth, penaltyY, penaltyWidth, penaltyHeight);
+        g.drawRect(ScreenSize.width - penaltyWidth, penaltyY, penaltyWidth, penaltyHeight);
 
         // Goals
         int goalWidth = 50, goalHeight = 100;
-        int goalY = (height - goalHeight) / 2;
+        int goalY = (ScreenSize.height - goalHeight) / 2;
         g.drawRect(0, goalY, goalWidth, goalHeight);
-        g.drawRect(width - goalWidth, goalY, goalWidth, goalHeight);
+        g.drawRect(ScreenSize.width - goalWidth, goalY, goalWidth, goalHeight);
 
         // Penalty spots
         int spotOffset = 79;
-        g.fillOval(spotOffset - 4, height / 2 - 4, 8, 8);
-        g.fillOval(width - spotOffset - 4, height / 2 - 4, 8, 8);
+        g.fillOval(spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
+        g.fillOval(ScreenSize.width - spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
     }
 }
 
@@ -205,9 +208,9 @@ class MainMenu extends Menus {
 
         window.displayButtons(buttons);
 
-        startButton.setBounds(window.width / 2 - 125, window.height / 2 - 100, 250, 50);
-        settingsButton.setBounds(window.width / 2 - 125, window.height / 2 - 30, 250, 50);
-        exitButton.setBounds(window.width / 2 - 125, window.height / 2 + 40, 250, 50);
+        startButton.setBounds(ScreenSize.width / 2 - 125, ScreenSize.height / 2 - 100, 250, 50);
+        settingsButton.setBounds(ScreenSize.width / 2 - 125, ScreenSize.height / 2 - 30, 250, 50);
+        exitButton.setBounds(ScreenSize.width / 2 - 125, ScreenSize.height / 2 + 40, 250, 50);
 
         add(startButton);
         add(settingsButton);
@@ -265,10 +268,10 @@ class StartMenu extends Menus {
 
         window.displayButtons(buttons);
 
-        startButton.setBounds(window.width / 4 - 125, window.height / 2 - 140, 250, 50);
-        formationButton.setBounds(window.width / 4 - 125, window.height / 2 - 70, 250, 50);
-        matchSettingsButton.setBounds(window.width / 4 - 125, window.height / 2, 250, 50);
-        exitButton.setBounds(window.width / 4 - 125, window.height / 2 + 70, 250, 50);
+        startButton.setBounds(ScreenSize.width / 4 - 125, ScreenSize.height / 2 - 140, 250, 50);
+        formationButton.setBounds(ScreenSize.width / 4 - 125, ScreenSize.height / 2 - 70, 250, 50);
+        matchSettingsButton.setBounds(ScreenSize.width / 4 - 125, ScreenSize.height / 2, 250, 50);
+        exitButton.setBounds(ScreenSize.width / 4 - 125, ScreenSize.height / 2 + 70, 250, 50);
 
         add(startButton);
         add(formationButton);
@@ -314,8 +317,8 @@ class SettingsMenu extends Menus {
         window.displayCheckBox(boxes);
         window.displayButtons(buttons);
 
-        debugButton.setBounds(window.width / 2 - 125, window.height / 2 - 100, 250, 50);
-        exitButton.setBounds(window.width / 2 - 125, window.height / 2 - 30, 250, 50);
+        debugButton.setBounds(ScreenSize.width / 2 - 125, ScreenSize.height / 2 - 100, 250, 50);
+        exitButton.setBounds(ScreenSize.width / 2 - 125, ScreenSize.height / 2 - 30, 250, 50);
 
         add(debugButton);
         add(exitButton);
@@ -342,16 +345,13 @@ class SettingsMenu extends Menus {
 }
 
 /*
- * need to add the special buttons with arrows on them for the formation
  * need to add the pitch next to the buttons displaying the current formation
  * for each side
- * need to add the swap side button and have it implemented
  * 
  */
 class FormationMenu extends Menus {
     CircleList<String> formationCircle;
     CircleList<String> sidesCircle;
-
 
     FormationMenu(UIWindow window) {
         super(window);
@@ -374,8 +374,6 @@ class FormationMenu extends Menus {
             formationLabel.setText(formationCircle.getCurrent().toString());
         });
 
-        
-
         JButton swapPrevBtn = new JButton("<");
         JButton swapNextBtn = new JButton(">");
 
@@ -390,7 +388,6 @@ class FormationMenu extends Menus {
             sidesCircle.next();
             swapLabel.setText(sidesCircle.getCurrent().toString());
         });
-        
 
         JButton exitButton = new JButton("Save");
         exitButton.addActionListener(e -> back());
@@ -401,15 +398,15 @@ class FormationMenu extends Menus {
 
         window.displayButtons(buttons);
 
-        formPrevBtn.setBounds(window.width / 4 - 125, window.height / 2 - 140, 45, 50);
-        formationLabel.setBounds(window.width / 4 - 75, window.height / 2 - 140, 150, 50);
-        formNextBtn.setBounds(window.width / 4 + 80, window.height / 2 - 140, 45, 50);
+        formPrevBtn.setBounds(ScreenSize.width / 4 - 125, ScreenSize.height / 2 - 140, 45, 50);
+        formationLabel.setBounds(ScreenSize.width / 4 - 75, ScreenSize.height / 2 - 140, 150, 50);
+        formNextBtn.setBounds(ScreenSize.width / 4 + 80, ScreenSize.height / 2 - 140, 45, 50);
 
-        swapPrevBtn.setBounds(window.width / 4 - 125, window.height / 2 - 70, 45, 50);
-        swapLabel.setBounds(window.width / 4 - 75, window.height / 2 - 70, 150, 50);
-        swapNextBtn.setBounds(window.width / 4 + 80, window.height / 2 - 70, 45, 50);
+        swapPrevBtn.setBounds(ScreenSize.width / 4 - 125, ScreenSize.height / 2 - 70, 45, 50);
+        swapLabel.setBounds(ScreenSize.width / 4 - 75, ScreenSize.height / 2 - 70, 150, 50);
+        swapNextBtn.setBounds(ScreenSize.width / 4 + 80, ScreenSize.height / 2 - 70, 45, 50);
 
-        exitButton.setBounds(window.width / 4 - 125, window.height / 2, 250, 50);
+        exitButton.setBounds(ScreenSize.width / 4 - 125, ScreenSize.height / 2, 250, 50);
 
         add(formPrevBtn);
         add(formationLabel);
@@ -454,7 +451,7 @@ class MatchSettingsMenu extends Menus {
 
         window.displayButtons(buttons);
 
-        exitButton.setBounds(window.width / 2 - 125, window.height / 2 - 100, 250, 50);
+        exitButton.setBounds(ScreenSize.width / 2 - 125, ScreenSize.height / 2 - 100, 250, 50);
 
         add(exitButton);
     }
@@ -500,8 +497,8 @@ class SimWindowMenu extends Menus {
 
         window.displayButtons(buttons);
 
-        resumeButton.setBounds(window.width / 2 - 75, window.height / 2 - 100, 150, 50);
-        exitButton.setBounds(window.width / 2 - 75, window.height / 2 - 30, 150, 50);
+        resumeButton.setBounds(ScreenSize.width / 2 - 75, ScreenSize.height / 2 - 100, 150, 50);
+        exitButton.setBounds(ScreenSize.width / 2 - 75, ScreenSize.height / 2 - 30, 150, 50);
 
         add(resumeButton);
         add(exitButton);
@@ -572,6 +569,8 @@ class CircleList<T> {
         this.current = this.current.prev;
     }
 }
+
+
 
 public class SimulationUI {
 

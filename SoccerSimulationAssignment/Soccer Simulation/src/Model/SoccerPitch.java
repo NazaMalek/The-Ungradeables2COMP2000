@@ -2,7 +2,10 @@ package Model;
 import java.awt.*;
 import javax.swing.*;
 
+import Rendering.ScreenSize;
+
 public class SoccerPitch extends JPanel {
+    
 
     // Create the players
     private Player[] players;
@@ -32,42 +35,56 @@ public class SoccerPitch extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        //pitch
         g.setColor(new Color(50, 150, 50));
-        g.fillRect(0, 0, 700, 400);
+        g.fillRect(0, 0, ScreenSize.width, ScreenSize.height);
 
-        //White pitch lines
         g.setColor(Color.WHITE);
 
-        //Outer border
-        g.drawRect(5, 5, 690, 390);
+        // Outer border
+        g.drawRect(0, 0, ScreenSize.width, ScreenSize.height);
 
-        //Halfway line
-        g.drawLine(350, 5, 350, 395);
+        // Halfway line
+        g.drawLine(ScreenSize.width / 2, 0, ScreenSize.width / 2, ScreenSize.height);
 
-        //Centre circle
-        g.drawOval(290, 140, 120, 120);
+        // Centre circle
+        int circleRadius = 60;
+        g.drawOval(ScreenSize.width / 2 - circleRadius, 
+                ScreenSize.height / 2 - circleRadius, circleRadius * 2, circleRadius * 2);
 
-        //Centre spot
-        g.fillOval(346, 196, 8, 8);
+        // Centre spot
+        g.fillOval(ScreenSize.width / 2 - 4, ScreenSize.height / 2 - 4, 8, 8);
 
-        //Penalty areas
-        g.drawRect(5, 100, 100, 200);
-        g.drawRect(595, 100, 100, 200);
+        // Penalty areas
+        int penaltyWidth = 100, penaltyHeight = 200;
+        int penaltyY = (ScreenSize.height - penaltyHeight) / 2;
+        g.drawRect(0, penaltyY, penaltyWidth, penaltyHeight);
+        g.drawRect(ScreenSize.width - penaltyWidth, penaltyY, penaltyWidth, penaltyHeight);
 
-        //Goals
-        g.drawRect(5, 150, 50, 100);
-        g.drawRect(645, 150, 50, 100);
+        // Goals
+        int goalWidth = 50, goalHeight = 100;
+        int goalY = (ScreenSize.height - goalHeight) / 2;
+        g.drawRect(0, goalY, goalWidth, goalHeight);
+        g.drawRect(ScreenSize.width - goalWidth, goalY, goalWidth, goalHeight);
 
-        //Penalty spots
-        g.fillOval(75, 196, 8, 8);
-        g.fillOval(617, 196, 8, 8);
-
+        // Penalty spots
+        int spotOffset = 79;
+        g.fillOval(spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
+        g.fillOval(ScreenSize.width - spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
         
         for (Player player : players) {
             player.draw(g);
         }
     }
+
+    public Player[] getPlayers(){
+        return players;
+    }
+
+    public void setPlayers(Player[] players){
+        this.players = players;
+        repaint();
+    }
+
 
     public static void main(String[] args) {
 

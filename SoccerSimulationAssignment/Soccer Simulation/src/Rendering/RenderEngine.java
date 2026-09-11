@@ -3,7 +3,7 @@ package Rendering;
 import java.awt.Color;
 import javax.swing.JFrame;
 
-public class RenderEngine {
+public class RenderEngine{
 public static void main(String[] args) {
         JFrame frame = new JFrame("Soccer Pitch");
         frame.setSize(700, 400);
