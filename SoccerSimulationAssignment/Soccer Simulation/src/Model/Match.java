@@ -22,7 +22,7 @@ import Rendering.SimulationUI;
 public class Match {
     private Player[] players;
     SoccerPitch pitch;
-    int maxPlayers = 20;
+    int maxPlayers = 22;
 
     Match() {
         pitch = new SoccerPitch();
