@@ -50,10 +50,14 @@ class UIWindow {
     JFrame frame;
     Menus currentMenu;
     boolean debugMode = false;
+    int width = 700;
+    int height = 400;
+    String backgroundColour = "#208026";
+    String btnColour = "#404143";
 
     public UIWindow() {
         frame = new JFrame("Soccer Simulation");
-        frame.setSize(800, 600);
+        frame.setSize(width, height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         
@@ -65,7 +69,7 @@ class UIWindow {
         frame.setContentPane(menu);
         frame.revalidate();
         frame.repaint();
-        frame.getContentPane().setBackground(Color.decode("#737275"));
+        frame.getContentPane().setBackground(Color.decode(backgroundColour));
     }
 
     void start() {
@@ -86,6 +90,28 @@ class UIWindow {
         if(this.getDebug() == true) return " (Debug)";
 
         return "";
+    }
+
+    void displayButtons(JButton[] buttons){
+        for (JButton btn : buttons) {
+            btn.setBackground(Color.decode(btnColour));
+            btn.setForeground(Color.WHITE);
+            btn.setFont(new Font("Lexend", Font.BOLD, 16));
+            btn.setBorderPainted(false);
+            btn.setFocusPainted(false);
+            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
+    }
+
+    void displayCheckBox(JCheckBox[] boxs) {
+        for (JCheckBox btn : boxs) {
+            btn.setBackground(Color.decode(btnColour));
+            btn.setForeground(Color.WHITE);
+            btn.setFont(new Font("Lexend", Font.BOLD, 16));
+            btn.setBorderPainted(false);
+            btn.setFocusPainted(false);
+            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
     }
 }
 
@@ -108,18 +134,27 @@ abstract class Menus extends JPanel {
 class MainMenu extends Menus {
     MainMenu(UIWindow window) {
         super(window);
+        setLayout(null);
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener(e -> next1());
 
-        JButton settingButton = new JButton("Settings");
-        settingButton.addActionListener(e -> next2());
+        JButton settingsButton = new JButton("Settings");
+        settingsButton.addActionListener(e -> next2());
 
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> back());
 
+        JButton[] buttons = { startButton, settingsButton, exitButton };
+
+        window.displayButtons(buttons);
+
+        startButton.setBounds(window.width/2 - 125, window.height / 2 - 100, 250, 50);
+        settingsButton.setBounds(window.width / 2 - 125, window.height / 2 - 30, 250, 50);
+        exitButton.setBounds(window.width / 2 - 125, window.height / 2 + 40, 250, 50);
+
         add(startButton);
-        add(settingButton);
+        add(settingsButton);
         add(exitButton);
     }
 
@@ -151,11 +186,12 @@ class MainMenu extends Menus {
 class StartMenu extends Menus {
     StartMenu(UIWindow window) {
         super(window);
+        setLayout(null);
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener(e -> next1());
 
-        JButton formationButton = new JButton("Formation");
+        JButton formationButton = new JButton("Formation Settings");
         formationButton.addActionListener(e -> next2());
 
         JButton matchSettingsButton = new JButton("Match Settings");
@@ -163,6 +199,15 @@ class StartMenu extends Menus {
 
         JButton exitButton = new JButton("Back");
         exitButton.addActionListener(e -> back());
+
+        JButton[] buttons = { startButton, formationButton, matchSettingsButton, exitButton };
+
+        window.displayButtons(buttons);
+
+        startButton.setBounds(window.width / 4 - 125, window.height / 2 - 140, 250, 50);
+        formationButton.setBounds(window.width / 4 - 125, window.height / 2 - 70, 250, 50);
+        matchSettingsButton.setBounds(window.width / 4 - 125, window.height / 2 , 250, 50);
+        exitButton.setBounds(window.width / 4 - 125, window.height / 2 + 70, 250, 50);
 
         add(startButton);
         add(formationButton);
@@ -195,12 +240,22 @@ class StartMenu extends Menus {
 class SettingsMenu extends Menus {
     SettingsMenu(UIWindow window) {
         super(window);
+        setLayout(null);
 
         JCheckBox debugButton = new JCheckBox("Debug Mode", window.getDebug());
         debugButton.addActionListener(e -> window.setDebug(debugButton.isSelected()));
 
         JButton exitButton = new JButton("Save");
         exitButton.addActionListener(e -> back());
+
+        JButton[] buttons = {exitButton};
+        JCheckBox[] boxes = {debugButton };
+        window.displayCheckBox(boxes);
+        window.displayButtons(buttons);
+        
+
+        debugButton.setBounds(window.width / 2 - 125, window.height / 2 - 100, 250, 50);
+        exitButton.setBounds(window.width / 2 - 125, window.height / 2 - 30, 250, 50);
 
         add(debugButton);
         add(exitButton);
@@ -236,8 +291,9 @@ class SettingsMenu extends Menus {
 class FormationMenu extends Menus {
     FormationMenu(UIWindow window) {
         super(window);
+        setLayout(null);
 
-        JButton formationButton = new JButton("Formation");
+        JButton formationButton = new JButton("Change Formation");
         formationButton.addActionListener(e -> next1());
 
         JButton swapButton = new JButton("Swap Sides");
@@ -245,6 +301,14 @@ class FormationMenu extends Menus {
 
         JButton exitButton = new JButton("Save");
         exitButton.addActionListener(e -> back());
+
+        JButton[] buttons = {formationButton, swapButton, exitButton };
+
+        window.displayButtons(buttons);
+
+        formationButton.setBounds(window.width / 4 - 125, window.height / 2 - 140, 250, 50);
+        swapButton.setBounds(window.width / 4 - 125, window.height / 2 - 70, 250, 50);
+        exitButton.setBounds(window.width / 4 - 125, window.height / 2, 250, 50);
 
         add(formationButton);
         add(swapButton);
@@ -274,9 +338,17 @@ class FormationMenu extends Menus {
 class MatchSettingsMenu extends Menus {
     MatchSettingsMenu(UIWindow window) {
         super(window);
+        setLayout(null);
 
         JButton exitButton = new JButton("Save");
         exitButton.addActionListener(e -> back());
+
+        JButton[] buttons = {exitButton };
+
+        window.displayButtons(buttons);
+
+        exitButton.setBounds(window.width / 2 - 125, window.height / 2 - 100, 250, 50);
+       
 
         add(exitButton);
     }
