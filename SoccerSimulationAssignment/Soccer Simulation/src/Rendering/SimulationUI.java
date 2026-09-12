@@ -211,7 +211,7 @@ class MainMenu extends Menus {
 }
 
 /*
- * NEED To add pitch with current saved settings and formations
+ * DONE
  */
 class StartMenu extends Menus {
     StartMenu(UIWindow window) {
@@ -320,8 +320,7 @@ class SettingsMenu extends Menus {
 }
 
 /*
- * NEED to add the dynamic soccer pitch that changes with formation and sides
- * DEPENDENT on how and what match needs and vertical field
+ * DONE
  */
 class FormationMenu extends Menus {
     CircleList<String> formationCircle;
@@ -423,8 +422,7 @@ class FormationMenu extends Menus {
 }
 
 /*
- * DONE, for this implementation cycle next one need to add the actual changable
- * settings
+ * DONE
  */
 class MatchSettingsMenu extends Menus {
     MatchSettingsMenu(UIWindow window) {
