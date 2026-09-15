@@ -5,10 +5,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.font.*;
 
-public class Player {
+public class Player extends Actor{
 
-    private int x;
-    private int y;
     private int jerseyNumber;
     private Color colour;
 
@@ -29,5 +27,25 @@ public class Player {
         int textX = x - metrics.stringWidth(number) / 2;
         int textY = y + metrics.getHeight() / 2 - metrics.getDescent();
         g.drawString(number, textX, textY);
+    }
+    
+    @Override 
+    void moveUp(int distance){
+
+    }
+
+    @Override 
+    void moveDown(int distance){
+
+    }
+
+    @Override 
+    void moveLeft(int distance){
+
+    }
+
+    @Override 
+    void moveRight(int distance){
+
     }
 }

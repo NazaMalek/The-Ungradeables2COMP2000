@@ -1,8 +1,10 @@
-import Rendering.SimulationUI
-import Rendering.ScreenSize
-package Model
+package Model;
 
-public class Ball implements Actor {
+
+import Rendering.SimulationUI;
+import Rendering.ScreenSize;
+
+public class Ball extends Actor {
     private int x;
     private int y;
 
@@ -15,7 +17,7 @@ public class Ball implements Actor {
         syncWithPlayer();
     }
 
-    Private void syncWithPlayer() {
+    private void syncWithPlayer() {
         if (owner != null) {
             this.x = owner.getX();
             this.y = owner.getY();
@@ -46,16 +48,16 @@ public class Ball implements Actor {
         if (velocityX < 0) velocityX++;
     }
 
-    @override
+    @Override
     public int getX() {
         if (owner != null) syncWithPlayer();
         return this.x;
     }
 
     @Override
-    public int GetY() {
+    public int getY() {
         if (owner != null) syncWithPlayer();
-        return.this.y;
+        return this.y;
     }
 
     @Override
