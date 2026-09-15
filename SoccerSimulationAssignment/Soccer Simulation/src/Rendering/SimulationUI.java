@@ -496,11 +496,8 @@ class SimWindow extends Menus {
         TimerPanel timerPanel = new TimerPanel();
         timerPanel.setBounds(ScreenSize.width / 2 - 75, 20, 150, 40);
 
-<<<<<<< HEAD
         match.pitch.setBounds(0, 0, ScreenSize.width, ScreenSize.height);
-=======
         add(timerPanel);
->>>>>>> 58808d38cfc7f93730fc0fb8e4f63bba65592105
         add(menuButton);
         add(match.pitch);
 
