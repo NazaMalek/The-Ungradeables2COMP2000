@@ -1,6 +1,8 @@
+// ActorShape.java — this file was missing entirely
 package Model;
 
-public enum  ActorShapeEnum {
+public enum ActorShapeEnum {
+    SQUARE,
     CIRCLE,
-    SQUARE
+    TRIANGLE
 }
