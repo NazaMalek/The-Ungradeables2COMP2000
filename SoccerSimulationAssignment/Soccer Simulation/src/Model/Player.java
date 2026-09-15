@@ -11,6 +11,7 @@ public class Player implements Actor {
     private int y;
     private int jerseyNumber;
     private Color colour;
+    private boolean isGoalkeeper;
 
     // Used by VerticalPitch — full detail for rendering a specific jersey/colour
     public Player(int x, int y, int jerseyNumber, Color colour) {
@@ -20,6 +21,12 @@ public class Player implements Actor {
     // Used by Match — just needs a name and position; visuals default for now
     public Player(String name, int x, int y, Color colour) {
         this(name, x, y, 0, colour);
+    }
+
+    // Used by Match for the goalkeeper specifically
+    public Player(String name, int x, int y, Color colour, boolean isGoalkeeper) {
+        this(name, x, y, 0, colour);
+        this.isGoalkeeper = isGoalkeeper;
     }
 
     // Shared constructor both overloads delegate to
@@ -33,6 +40,10 @@ public class Player implements Actor {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isGoalkeeper() {
+        return isGoalkeeper;
     }
 
     public void draw(Graphics g) {

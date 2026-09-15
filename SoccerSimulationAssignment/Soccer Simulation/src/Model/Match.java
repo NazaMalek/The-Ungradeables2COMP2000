@@ -79,7 +79,7 @@ public class Match {
         String prefix = isHomeTeam ? "Home_" : "Away_";
 
         // Always spawn Goalkeeper at base line
-        players.add(new Player(prefix + "GK", baseLineX, centerY, teamColor));
+        players.add(new Player(prefix + "GK", baseLineX, centerY, teamColor, true));
 
         if ("4-3-3".equals(formationType)) {
             // 4 Defenders
@@ -134,10 +134,14 @@ public class Match {
 
             // player ai
             for (Player p : players) {
-                if (p.getX() < ballX) p.moveRight(1);
-                if (p.getX() > ballX) p.moveLeft(1);
-                if (p.getY() < ballY) p.moveDown(1);
-                if (p.getY() > ballY) p.moveUp(1);
+                if (p.isGoalkeeper()) {
+                    updateGoalkeeper(p, ballY);
+                } else {
+                    if (p.getX() < ballX) p.moveRight(1);
+                    if (p.getX() > ballX) p.moveLeft(1);
+                    if (p.getY() < ballY) p.moveDown(1);
+                    if (p.getY() > ballY) p.moveUp(1);
+                }
             }
             resolvePlayerCollisions();
 
@@ -168,6 +172,19 @@ public class Match {
                 break;
             }
         }
+    }
+
+    // Goalkeepers only track the ball vertically, and stay clamped inside their box
+    private void updateGoalkeeper(Player gk, int ballY) {
+        if (gk.getY() < ballY) gk.moveDown(1);
+        if (gk.getY() > ballY) gk.moveUp(1);
+
+        int margin = 15; // keeps them off the very edge of the box
+        int minY = (ScreenSize.height - SoccerPitch.PENALTY_HEIGHT) / 2 + margin;
+        int maxY = minY + SoccerPitch.PENALTY_HEIGHT - (margin * 2);
+
+        if (gk.getY() < minY) gk.moveDown(minY - gk.getY());
+        if (gk.getY() > maxY) gk.moveUp(gk.getY() - maxY);
     }
 
     // Match.java — new method
