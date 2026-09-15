@@ -5,6 +5,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.font.*;
 
+import Rendering.ScreenSize;
+
+
 public class Player extends Actor{
 
     private int jerseyNumber;
@@ -31,21 +34,26 @@ public class Player extends Actor{
     
     @Override 
     void moveUp(int distance){
+        if(this.y + distance <= 0){
+            
+        }
+        this.y += distance;
 
     }
 
     @Override 
     void moveDown(int distance){
-
+        this.y -= distance;
     }
 
     @Override 
     void moveLeft(int distance){
+        this.x -= distance;
 
     }
 
     @Override 
     void moveRight(int distance){
-
+        this.x += distance;
     }
 }

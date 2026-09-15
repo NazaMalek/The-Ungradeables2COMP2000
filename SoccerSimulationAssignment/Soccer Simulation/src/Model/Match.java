@@ -19,15 +19,72 @@ import java.awt.*;
 import javax.swing.*;
 import Rendering.ScreenSize;
 import Rendering.SimulationUI;
+import java.util.*;
+
+
 
 public class Match {
-    private Player[] players;
     SoccerPitch pitch;
-    int maxPlayers = 22;
+    Ball ball;
+
 
     Match() {
         pitch = new SoccerPitch();
-        players = new Player[20];
+    }
+
+    
+
+
+}
+
+
+    class Engine extends Match{
+        Team teamA;
+        Team teamB;
+        Match match;
+        int maxPlayers = 22;
+        private Random random;
+        ArrayList<Team> matchPlayers;
+
+
+
+        Engine(Team a, Team b, Match m){
+            this.teamA = a;
+            this.teamB = b;
+            this.match = m;
+            this.matchPlayers.add(a);
+            this.matchPlayers.add(b);
+        }
+
+        void movePlayers(){
+            for(Team teams : matchPlayers){
+                for(Player players : teams){
+
+                }
+            }
+            
+        }
+
+    }
+
+class Team {
+
+    Player[] players;
+    boolean win;
+
+
+    Team(Player[] p){
+        this.players = p;
+        this.win = false;
+
+    }
+
+    public boolean getWin(){
+        return this.win;
+    }
+
+    public void setWin(boolean w){
+        this.win = w;
     }
 
     public Player[] getPlayers() {
@@ -36,49 +93,19 @@ public class Match {
 
     public void setPlayers(Player[] players) {
         this.players = players;
-        //repaint();
     }
 
     public void drawPlayers(Graphics g){
 
-        for (Player player : players) {
-        player.draw(g);
+        for (Player p : players) {
+        p.draw(g);
         }
     }
 
-    
-
-    public void engine(){
-        Team teamA;
-        Team teamB;
-
-        if(teamA.win == true){
-            teamA.hasWon();
-            return;
+    public void movePlayers(){
+        for(Player p : players){
+            
         }
-    }
-
-}
-
-class Team {
-
-    Player[] players;
-    boolean win;
-
-
-    Team(){
-        
-
-    }
-
-    public void hasWon(){
-        this.win = true;
-        // call victory screen
-
-    }
-
-    public void getPlayers(){
-
     }
 
 
