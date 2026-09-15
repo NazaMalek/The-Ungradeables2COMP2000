@@ -136,6 +136,8 @@ class UIWindow {
         }
     }
 
+    
+
 }
 
 /*
@@ -473,7 +475,7 @@ class SimWindow extends Menus {
     SimWindow(UIWindow window) {
         super(window);
         setLayout(null);
-        window.pitch.setBounds(0, 0, 700, 400);
+        window.pitch.setBounds(0, 0, ScreenSize.width, ScreenSize.height);
 
         JButton menuButton = new JButton("Menu");
         menuButton.addActionListener(e -> back());

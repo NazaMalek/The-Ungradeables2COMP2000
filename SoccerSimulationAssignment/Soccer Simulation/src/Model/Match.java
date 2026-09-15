@@ -11,6 +11,7 @@
  * 
  * 
  * 
+ * 
  */
 package Model;
 
@@ -44,5 +45,41 @@ public class Match {
         player.draw(g);
         }
     }
+
+    
+
+    public void engine(){
+        Team teamA;
+        Team teamB;
+
+        if(teamA.win == true){
+            teamA.hasWon();
+            return;
+        }
+    }
+
+}
+
+class Team {
+
+    Player[] players;
+    boolean win;
+
+
+    Team(){
+        
+
+    }
+
+    public void hasWon(){
+        this.win = true;
+        // call victory screen
+
+    }
+
+    public void getPlayers(){
+
+    }
+
 
 }
