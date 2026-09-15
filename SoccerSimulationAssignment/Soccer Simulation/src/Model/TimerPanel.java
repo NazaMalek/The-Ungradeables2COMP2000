@@ -16,7 +16,7 @@ public class TimerPanel extends JPanel {
         matchTimer = new MatchTimer(90);
         timerLabel = new JLabel(matchTimer.getTime(), SwingConstants.CENTER);
         timerLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        timerLabel.setForeground(Color.WHITE);
+        timerLabel.setForeground(Color.BLACK);
         add(timerLabel);
         timer = new Timer(1000, e -> { matchTimer.tick();
         timerLabel.setText(matchTimer.getTime());
