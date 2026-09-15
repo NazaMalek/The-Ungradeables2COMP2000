@@ -23,8 +23,15 @@ public class Match {
     // Main Arrays
     private ArrayList<Actor> gameActors;
     private ArrayList<Player> players;
-    private boolean isRunning;
+    private volatile boolean isRunning;
     private Thread simulationThread;
+
+    // Controls passing decisions and prevents a player immediately
+    // collecting the ball again after making a pass
+    private final Random random = new Random();
+    private int ticksUntilPass = 70;
+    private Player recentPasser;
+    private int recentPasserCooldown;
 
     public Match() {
         this.pitch = new SoccerPitch();
@@ -35,8 +42,14 @@ public class Match {
 
     // spawn entities
     public void setupAndStartSimulation(String homeFormation, String awayFormation) {
+        // Stop an old loop before starting a new match with the same object
+        stopSimulation();
+
         gameActors.clear();
         players.clear();
+        recentPasser = null;
+        recentPasserCooldown = 0;
+        ticksUntilPass = 70;
 
         // summon ball in centre
         ball = new Ball(null);
@@ -44,8 +57,8 @@ public class Match {
         int centerY = ScreenSize.height / 2;
 
         // Force initial placement on kickoff
-        ball.moveLeft(-centerX);
-        ball.moveUp(-centerY);
+        ball.moveRight(centerX);
+        ball.moveDown(centerY);
 
         // spawn and map formations
         generateTeamFormation(homeFormation, Color.BLUE, true);
@@ -61,7 +74,7 @@ public class Match {
 
         // begin processing thread loop
         this.isRunning = true;
-        simulationThread = new Thread(this::runSimulationEngineLoop);
+        simulationThread = new Thread(this::runSimulationEngineLoop, "soccer-simulation");
         simulationThread.start();
     }
 
@@ -129,35 +142,82 @@ public class Match {
     // background engine checking frame
     private void runSimulationEngineLoop() {
         while (isRunning) {
+            // Move a loose ball, or sync an owned ball with its player
+            ball.update();
+
             int ballX = ball.getX();
             int ballY = ball.getY();
+            Player owner = ball.getOwner();
+
+            Player homeChaser = null;
+            Player awayChaser = null;
+            Player presser = null;
+
+            if (owner == null) {
+                // Only the closest outfield player from each team chases a loose ball
+                homeChaser = findClosestPlayer(true, ballX, ballY);
+                awayChaser = findClosestPlayer(false, ballX, ballY);
+            } else {
+                // When the ball is owned, only the closest opponent presses
+                presser = findClosestOpponent(owner);
+            }
 
             // player ai
             for (Player p : players) {
                 if (p.isGoalkeeper()) {
                     updateGoalkeeper(p, ballY);
+                } else if (owner == null) {
+                    if (p == homeChaser || p == awayChaser) {
+                        moveToward(p, ballX, ballY, 2);
+                    } else {
+                        // Everyone else shuffles with the play but keeps formation
+                        moveIntoShape(p, ballX, ballY);
+                    }
+                } else if (p == owner) {
+                    // The player in possession dribbles toward the opposing goal
+                    int direction = isHome(p) ? 1 : -1;
+                    moveToward(p, p.getX() + (direction * 25), p.getY(), 1);
+                } else if (p == presser) {
+                    moveToward(p, owner.getX(), owner.getY(), 2);
                 } else {
-                    if (p.getX() < ballX) p.moveRight(1);
-                    if (p.getX() > ballX) p.moveLeft(1);
-                    if (p.getY() < ballY) p.moveDown(1);
-                    if (p.getY() > ballY) p.moveUp(1);
+                    // Everyone else shuffles with the play but keeps formation
+                    moveIntoShape(p, ballX, ballY);
                 }
             }
+
             resolvePlayerCollisions();
 
-             // collision: whichever player is close enough takes possession
-        int pickupRadius = 18; // matches the ~9px draw radius of each circle, so they visually touch
-        for (Player p : players) {
-            int dx = p.getX() - ball.getX();
-            int dy = p.getY() - ball.getY();
-            double distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance <= pickupRadius) {
-                ball.setOwner(p);
-                break; // first match wins this tick
+            if (recentPasserCooldown > 0) {
+                recentPasserCooldown--;
+                if (recentPasserCooldown == 0) {
+                    recentPasser = null;
+                }
             }
-        }
 
-            ball.update();
+            // collision: whichever eligible player is closest takes possession
+            if (ball.getOwner() == null) {
+                int pickupRadius = 18; // matches the ~9px draw radius of each circle, so they visually touch
+                Player collector = findPlayerTouchingBall(pickupRadius);
+
+                if (collector != null) {
+                    ball.setOwner(collector);
+                    // Hold the ball for roughly 1-2 seconds before passing
+                    ticksUntilPass = 50 + random.nextInt(70);
+                }
+            } else {
+                ticksUntilPass--;
+
+                if (ticksUntilPass <= 0) {
+                    Player passer = ball.getOwner();
+
+                    if (passBall(passer)) {
+                        recentPasser = passer;
+                        recentPasserCooldown = 12;
+                    }
+
+                    ticksUntilPass = 50 + random.nextInt(70);
+                }
+            }
 
             // push updated positions to the pitch so it actually redraws
             // this frame's state — repaint() is safe to call from a
@@ -174,6 +234,162 @@ public class Match {
         }
     }
 
+    private boolean isHome(Player p) {
+        return p.getName().startsWith("Home_");
+    }
+
+    private int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    private void moveToward(Player p, int targetX, int targetY, int speed) {
+        if (p.getX() < targetX) {
+            p.moveRight(Math.min(speed, targetX - p.getX()));
+        } else if (p.getX() > targetX) {
+            p.moveLeft(Math.min(speed, p.getX() - targetX));
+        }
+
+        if (p.getY() < targetY) {
+            p.moveDown(Math.min(speed, targetY - p.getY()));
+        } else if (p.getY() > targetY) {
+            p.moveUp(Math.min(speed, p.getY() - targetY));
+        }
+    }
+
+    // Players move with the play without abandoning their original positions
+    private void moveIntoShape(Player p, int ballX, int ballY) {
+        int centerX = ScreenSize.width / 2;
+        int centerY = ScreenSize.height / 2;
+
+        int xShift = clamp((ballX - centerX) / 8, -45, 45);
+        int yShift = clamp((ballY - centerY) / 10, -25, 25);
+
+        int targetX = clamp(p.getHomeX() + xShift, 20, ScreenSize.width - 20);
+        int targetY = clamp(p.getHomeY() + yShift, 20, ScreenSize.height - 20);
+
+        moveToward(p, targetX, targetY, 1);
+    }
+
+    private Player findClosestPlayer(boolean homeTeam, int targetX, int targetY) {
+        Player closest = null;
+        double closestDistance = Double.MAX_VALUE;
+
+        for (Player p : players) {
+            if (p.isGoalkeeper() || isHome(p) != homeTeam) {
+                continue;
+            }
+
+            double distance = distanceBetween(p.getX(), p.getY(), targetX, targetY);
+
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = p;
+            }
+        }
+
+        return closest;
+    }
+
+    private Player findClosestOpponent(Player owner) {
+        Player closest = null;
+        double closestDistance = Double.MAX_VALUE;
+        boolean ownerIsHome = isHome(owner);
+
+        for (Player p : players) {
+            if (p.isGoalkeeper() || isHome(p) == ownerIsHome) {
+                continue;
+            }
+
+            double distance = distanceBetween(p.getX(), p.getY(), owner.getX(), owner.getY());
+
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = p;
+            }
+        }
+
+        return closest;
+    }
+
+    private Player findPlayerTouchingBall(int pickupRadius) {
+        Player closest = null;
+        double closestDistance = Double.MAX_VALUE;
+
+        for (Player p : players) {
+            if (p == recentPasser && recentPasserCooldown > 0) {
+                continue;
+            }
+
+            double distance = distanceBetween(p.getX(), p.getY(), ball.getX(), ball.getY());
+
+            if (distance <= pickupRadius && distance < closestDistance) {
+                closestDistance = distance;
+                closest = p;
+            }
+        }
+
+        return closest;
+    }
+
+    private double distanceBetween(int x1, int y1, int x2, int y2) {
+        long dx = (long) x2 - x1;
+        long dy = (long) y2 - y1;
+        return Math.sqrt((dx * dx) + (dy * dy));
+    }
+
+    private boolean passBall(Player passer) {
+        boolean homeTeam = isHome(passer);
+        int attackDirection = homeTeam ? 1 : -1;
+        Player bestTarget = null;
+        double bestScore = -Double.MAX_VALUE;
+
+        for (Player teammate : players) {
+            if (teammate == passer || teammate.isGoalkeeper() || isHome(teammate) != homeTeam) {
+                continue;
+            }
+
+            int dx = teammate.getX() - passer.getX();
+            int dy = teammate.getY() - passer.getY();
+            double distance = distanceBetween(passer.getX(), passer.getY(), teammate.getX(), teammate.getY());
+
+            // Avoid passes to somebody on top of the passer or too far away
+            if (distance < 35 || distance > 260) {
+                continue;
+            }
+
+            // Prefer a useful forward pass but keep some variation
+            int forwardDistance = attackDirection * dx;
+            double score = (forwardDistance * 1.5)
+                    - (Math.abs(dy) * 0.25)
+                    - (distance * 0.10)
+                    + (random.nextDouble() * 40);
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestTarget = teammate;
+            }
+        }
+
+        if (bestTarget == null) {
+            return false;
+        }
+
+        int dx = bestTarget.getX() - ball.getX();
+        int dy = bestTarget.getY() - ball.getY();
+        double distance = distanceBetween(ball.getX(), ball.getY(), bestTarget.getX(), bestTarget.getY());
+
+        if (distance == 0) {
+            return false;
+        }
+
+        int passSpeed = 7;
+        int velocityX = (int) Math.round((dx / distance) * passSpeed);
+        int velocityY = (int) Math.round((dy / distance) * passSpeed);
+
+        ball.kick(velocityX, velocityY);
+        return true;
+    }
+
     // Goalkeepers only track the ball vertically, and stay clamped inside their box
     private void updateGoalkeeper(Player gk, int ballY) {
         if (gk.getY() < ballY) gk.moveDown(1);
@@ -188,36 +404,45 @@ public class Match {
     }
 
     // Match.java — new method
-private void resolvePlayerCollisions() {
-    int minDistance = 20; // slightly more than the ~18px draw diameter, so they touch but don't overlap
+    private void resolvePlayerCollisions() {
+        int minDistance = 20; // slightly more than the ~18px draw diameter, so they touch but don't overlap
 
-    for (int i = 0; i < players.size(); i++) {
-        for (int j = i + 1; j < players.size(); j++) {
-            Player a = players.get(i);
-            Player b = players.get(j);
+        for (int i = 0; i < players.size(); i++) {
+            for (int j = i + 1; j < players.size(); j++) {
+                Player a = players.get(i);
+                Player b = players.get(j);
 
-            int dx = b.getX() - a.getX();
-            int dy = b.getY() - a.getY();
-            double distance = Math.sqrt(dx * dx + dy * dy);
+                int dx = b.getX() - a.getX();
+                int dy = b.getY() - a.getY();
+                double distance = Math.sqrt((dx * dx) + (dy * dy));
 
-            if (distance > 0 && distance < minDistance) {
-                double overlap = (minDistance - distance) / 2;
-                int pushX = (int) Math.round(overlap * (dx / distance));
-                int pushY = (int) Math.round(overlap * (dy / distance));
+                // If two players are in exactly the same spot, separate them first
+                if (distance == 0) {
+                    int push = minDistance / 2;
+                    a.moveLeft(push);
+                    b.moveRight(push);
+                } else if (distance < minDistance) {
+                    double overlap = (minDistance - distance) / 2;
+                    int pushX = (int) Math.round(overlap * (dx / distance));
+                    int pushY = (int) Math.round(overlap * (dy / distance));
 
-                // push a and b apart along the line connecting them
-                if (pushX > 0) { a.moveLeft(pushX); b.moveRight(pushX); }
-                else if (pushX < 0) { a.moveRight(-pushX); b.moveLeft(-pushX); }
+                    // push a and b apart along the line connecting them
+                    if (pushX > 0) { a.moveLeft(pushX); b.moveRight(pushX); }
+                    else if (pushX < 0) { a.moveRight(-pushX); b.moveLeft(-pushX); }
 
-                if (pushY > 0) { a.moveUp(pushY); b.moveDown(pushY); }
-                else if (pushY < 0) { a.moveDown(-pushY); b.moveUp(-pushY); }
+                    if (pushY > 0) { a.moveUp(pushY); b.moveDown(pushY); }
+                    else if (pushY < 0) { a.moveDown(-pushY); b.moveUp(-pushY); }
+                }
             }
         }
     }
-}
 
     public void stopSimulation() {
         this.isRunning = false;
+
+        if (simulationThread != null && simulationThread != Thread.currentThread()) {
+            simulationThread.interrupt();
+        }
     }
 
     public ArrayList<Actor> getGameActors() {
