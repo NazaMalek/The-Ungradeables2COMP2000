@@ -211,7 +211,7 @@ class MainMenu extends Menus {
 }
 
 /*
- * NEED To add pitch with current saved settings and formations
+ * DONE
  */
 class StartMenu extends Menus {
     StartMenu(UIWindow window) {
@@ -320,8 +320,7 @@ class SettingsMenu extends Menus {
 }
 
 /*
- * NEED to add the dynamic soccer pitch that changes with formation and sides
- * DEPENDENT on how and what match needs and vertical field
+ * DONE
  */
 class FormationMenu extends Menus {
     CircleList<String> formationCircle;
@@ -423,8 +422,7 @@ class FormationMenu extends Menus {
 }
 
 /*
- * DONE, for this implementation cycle next one need to add the actual changable
- * settings
+ * DONE
  */
 class MatchSettingsMenu extends Menus {
     MatchSettingsMenu(UIWindow window) {
@@ -626,7 +624,6 @@ class VerticalPitch extends JPanel {
         this.width = (int) (this.height * 0.65);
         players = new ArrayList<>();
 
-
         rectX = ScreenSize.width - width - 50;
         rectY = height - 310;
         rectW = width;
@@ -672,13 +669,13 @@ class VerticalPitch extends JPanel {
         }
     }
 
-     private void addPlayer(int jerseyNumber, double nx, double ny) {
+    private void addPlayer(int jerseyNumber, double nx, double ny) {
         int x = rectX + (int) (nx * rectW);
         int y = rectY + (int) (ny * rectH);
         players.add(new Player(x, y, jerseyNumber, sideColour));
     }
 
-    void drawPlayers(UIWindow window){
+    void drawPlayers(UIWindow window) {
         players.clear(); // avoid stacking duplicates on repeated calls
 
         String formation = window.formationCircle.getCurrent();
@@ -725,29 +722,18 @@ class VerticalPitch extends JPanel {
         repaint();
     }
 
-    void swapSides(UIWindow window){
-        if(window.sidesCircle.getCurrent().equals("Home")){
+    void swapSides(UIWindow window) {
+        if (window.sidesCircle.getCurrent().equals("Home")) {
             sideColour = Color.RED;
             window.sidesCircle.next();
         } else {
             sideColour = Color.BLUE;
             window.sidesCircle.next();
         }
-        
-        
+
     }
 
 }
-
-/*
- * the vertical pitch will just be for display while the important information
- * like the formation and sides will be saved into the actual pitch, the
- * formations are hard coded so i can just have an array for each postion on the
- * field 1 for goalkeeper, 5 for every other postion adn then just add players
- * to those arrays and then just hard code arrays or even easier just an if
- * statement that prints one side if the custom circle list value is said
- * formation then just have it draw the players on the field accordingly
- */
 
 public class SimulationUI {
 
