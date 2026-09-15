@@ -13,12 +13,15 @@ public class Player implements Actor {
     private Color colour;
     private boolean isGoalkeeper;
 
-    // Used by VerticalPitch — full detail for rendering a specific jersey/colour
+    // retain original formation pos
+    private final int homeX;
+    private final int homeY;
+
+    // rendering specific jersy colour
     public Player(int x, int y, int jerseyNumber, Color colour) {
         this("", x, y, jerseyNumber, colour);
     }
 
-    // Used by Match — just needs a name and position; visuals default for now
     public Player(String name, int x, int y, Color colour) {
         this(name, x, y, 0, colour);
     }
@@ -29,11 +32,16 @@ public class Player implements Actor {
         this.isGoalkeeper = isGoalkeeper;
     }
 
-    // Shared constructor both overloads delegate to
+    // Shared constructor
     private Player(String name, int x, int y, int jerseyNumber, Color colour) {
         this.name = name;
         this.x = x;
         this.y = y;
+
+        // Save og formation position
+        this.homeX = x;
+        this.homeY = y;
+
         this.jerseyNumber = jerseyNumber;
         this.colour = colour;
     }
@@ -44,6 +52,16 @@ public class Player implements Actor {
 
     public boolean isGoalkeeper() {
         return isGoalkeeper;
+    }
+
+    // Original formation X position
+    public int getHomeX() {
+        return homeX;
+    }
+
+    // Original formation Y position
+    public int getHomeY() {
+        return homeY;
     }
 
     public void draw(Graphics g) {
@@ -59,16 +77,24 @@ public class Player implements Actor {
     }
 
     @Override
-    public int getX() { return this.x; }
+    public int getX() {
+        return this.x;
+    }
 
     @Override
-    public int getY() { return this.y; }
+    public int getY() {
+        return this.y;
+    }
 
     @Override
-    public Color getColor() { return this.colour; }
+    public Color getColor() {
+        return this.colour;
+    }
 
     @Override
-    public ActorShapeEnum getShape() { return ActorShapeEnum.SQUARE; }
+    public ActorShapeEnum getShape() {
+        return ActorShapeEnum.SQUARE;
+    }
 
     @Override
     public void moveUp(int distance) {
