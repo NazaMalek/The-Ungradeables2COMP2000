@@ -9,6 +9,9 @@ import Rendering.ScreenSize;
 
 public class SoccerPitch extends JPanel {
 
+    public static final int PENALTY_WIDTH = 100;
+    public static final int PENALTY_HEIGHT = 200;
+
     private List<Actor> actors = new ArrayList<>();
 
     public SoccerPitch() {
@@ -44,10 +47,9 @@ public class SoccerPitch extends JPanel {
         g.fillOval(ScreenSize.width / 2 - 4, ScreenSize.height / 2 - 4, 8, 8);
 
         // Penalty areas
-        int penaltyWidth = 100, penaltyHeight = 200;
-        int penaltyY = (ScreenSize.height - penaltyHeight) / 2;
-        g.drawRect(0, penaltyY, penaltyWidth, penaltyHeight);
-        g.drawRect(ScreenSize.width - penaltyWidth, penaltyY, penaltyWidth, penaltyHeight);
+        int penaltyY = (ScreenSize.height - PENALTY_HEIGHT) / 2;
+        g.drawRect(0, penaltyY, PENALTY_WIDTH, PENALTY_HEIGHT);
+        g.drawRect(ScreenSize.width - PENALTY_WIDTH, penaltyY, PENALTY_WIDTH, PENALTY_HEIGHT);
 
         // Goals
         int goalWidth = 50, goalHeight = 100;
