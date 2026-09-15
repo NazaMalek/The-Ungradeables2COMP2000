@@ -48,6 +48,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+import Model.TimerPanel;
 import Model.SoccerPitch;
 import Model.Player;
 import Model.Match;
@@ -491,8 +492,15 @@ class SimWindow extends Menus {
         window.displayButtons(buttons);
 
         menuButton.setBounds(ScreenSize.width / 5 - 125, ScreenSize.height - 385, 80, 40);
+        
+        TimerPanel timerPanel = new TimerPanel();
+        timerPanel.setBounds(ScreenSize.width / 2 - 75, 20, 150, 40);
 
+<<<<<<< HEAD
         match.pitch.setBounds(0, 0, ScreenSize.width, ScreenSize.height);
+=======
+        add(timerPanel);
+>>>>>>> 58808d38cfc7f93730fc0fb8e4f63bba65592105
         add(menuButton);
         add(match.pitch);
 
