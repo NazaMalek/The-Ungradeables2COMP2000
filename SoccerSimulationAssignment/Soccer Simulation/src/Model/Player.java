@@ -1,4 +1,3 @@
-// Player.java
 package Model;
 
 import java.awt.Color;
@@ -7,16 +6,33 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 public class Player implements Actor {
+    private String name;
     private int x;
     private int y;
     private int jerseyNumber;
     private Color colour;
 
+    // Used by VerticalPitch — full detail for rendering a specific jersey/colour
     public Player(int x, int y, int jerseyNumber, Color colour) {
+        this("", x, y, jerseyNumber, colour);
+    }
+
+    // Used by Match — just needs a name and position; visuals default for now
+    public Player(String name, int x, int y, Color colour) {
+        this(name, x, y, 0, colour);
+    }
+
+    // Shared constructor both overloads delegate to
+    private Player(String name, int x, int y, int jerseyNumber, Color colour) {
+        this.name = name;
         this.x = x;
         this.y = y;
         this.jerseyNumber = jerseyNumber;
         this.colour = colour;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void draw(Graphics g) {

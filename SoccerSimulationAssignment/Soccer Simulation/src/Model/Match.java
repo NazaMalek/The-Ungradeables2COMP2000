@@ -8,10 +8,6 @@
  * mini print log
  * execute events just be an area for stuff to happen like pull everything
  * together
- * 
- * 
- * 
- * 
  */
 package Model;
 
@@ -46,9 +42,9 @@ public class Match {
         ball = new Ball(null);
         int centerX = ScreenSize.width / 2;
         int centerY = ScreenSize.height / 2;
-        
+
         // Force initial placement on kickoff
-        ball.moveLeft(-centerX); 
+        ball.moveLeft(-centerX);
         ball.moveUp(-centerY);
 
         // spawn and map formations
@@ -59,13 +55,17 @@ public class Match {
         gameActors.addAll(players);
         gameActors.add(ball);
 
-        // begin processing thread loop 
+        // push the initial state to the pitch immediately, so something
+        // shows up before the simulation loop's first tick
+        pitch.setActors(gameActors);
+
+        // begin processing thread loop
         this.isRunning = true;
         simulationThread = new Thread(this::runSimulationEngineLoop);
         simulationThread.start();
     }
 
-    //specific grid patterns depending on chosen config
+    // specific grid patterns depending on chosen config
     private void generateTeamFormation(String formationType, Color teamColor, boolean isHomeTeam) {
         int centerY = ScreenSize.height / 2;
         int directionX = isHomeTeam ? 1 : -1;
@@ -79,50 +79,50 @@ public class Match {
         String prefix = isHomeTeam ? "Home_" : "Away_";
 
         // Always spawn Goalkeeper at base line
-        players.add(new Player(prefix + "GK", baseLineX, centerY));
+        players.add(new Player(prefix + "GK", baseLineX, centerY, teamColor));
 
         if ("4-3-3".equals(formationType)) {
             // 4 Defenders
-            players.add(new Player(prefix + "DF1", defX, centerY - 150));
-            players.add(new Player(prefix + "DF2", defX, centerY - 50));
-            players.add(new Player(prefix + "DF3", defX, centerY + 50));
-            players.add(new Player(prefix + "DF4", defX, centerY + 150));
+            players.add(new Player(prefix + "DF1", defX, centerY - 150, teamColor));
+            players.add(new Player(prefix + "DF2", defX, centerY - 50, teamColor));
+            players.add(new Player(prefix + "DF3", defX, centerY + 50, teamColor));
+            players.add(new Player(prefix + "DF4", defX, centerY + 150, teamColor));
             // 3 Midfielders
-            players.add(new Player(prefix + "MF1", midX, centerY - 100));
-            players.add(new Player(prefix + "MF2", midX, centerY));
-            players.add(new Player(prefix + "MF3", midX, centerY + 100));
+            players.add(new Player(prefix + "MF1", midX, centerY - 100, teamColor));
+            players.add(new Player(prefix + "MF2", midX, centerY, teamColor));
+            players.add(new Player(prefix + "MF3", midX, centerY + 100, teamColor));
             // 3 Forwards
-            players.add(new Player(prefix + "FW1", fwdX, centerY - 120));
-            players.add(new Player(prefix + "FW2", fwdX, centerY));
-            players.add(new Player(prefix + "FW3", fwdX, centerY + 120));
+            players.add(new Player(prefix + "FW1", fwdX, centerY - 120, teamColor));
+            players.add(new Player(prefix + "FW2", fwdX, centerY, teamColor));
+            players.add(new Player(prefix + "FW3", fwdX, centerY + 120, teamColor));
         } else if ("3-5-2".equals(formationType)) {
             // 3 Defenders
-            players.add(new Player(prefix + "DF1", defX, centerY - 120));
-            players.add(new Player(prefix + "DF2", defX, centerY));
-            players.add(new Player(prefix + "DF3", defX, centerY + 120));
+            players.add(new Player(prefix + "DF1", defX, centerY - 120, teamColor));
+            players.add(new Player(prefix + "DF2", defX, centerY, teamColor));
+            players.add(new Player(prefix + "DF3", defX, centerY + 120, teamColor));
             // 5 Midfielders
-            players.add(new Player(prefix + "MF1", midX, centerY - 160));
-            players.add(new Player(prefix + "MF2", midX, centerY - 80));
-            players.add(new Player(prefix + "MF3", midX, centerY));
-            players.add(new Player(prefix + "MF4", midX, centerY + 80));
-            players.add(new Player(prefix + "MF5", midX, centerY + 160));
+            players.add(new Player(prefix + "MF1", midX, centerY - 160, teamColor));
+            players.add(new Player(prefix + "MF2", midX, centerY - 80, teamColor));
+            players.add(new Player(prefix + "MF3", midX, centerY, teamColor));
+            players.add(new Player(prefix + "MF4", midX, centerY + 80, teamColor));
+            players.add(new Player(prefix + "MF5", midX, centerY + 160, teamColor));
             // 2 Forwards
-            players.add(new Player(prefix + "FW1", fwdX, centerY - 60));
-            players.add(new Player(prefix + "FW2", fwdX, centerY + 60));
+            players.add(new Player(prefix + "FW1", fwdX, centerY - 60, teamColor));
+            players.add(new Player(prefix + "FW2", fwdX, centerY + 60, teamColor));
         } else { // Default fallback to standard "4-4-2"
             // 4 Defenders
-            players.add(new Player(prefix + "DF1", defX, centerY - 150));
-            players.add(new Player(prefix + "DF2", defX, centerY - 50));
-            players.add(new Player(prefix + "DF3", defX, centerY + 50));
-            players.add(new Player(prefix + "DF4", defX, centerY + 150));
+            players.add(new Player(prefix + "DF1", defX, centerY - 150, teamColor));
+            players.add(new Player(prefix + "DF2", defX, centerY - 50, teamColor));
+            players.add(new Player(prefix + "DF3", defX, centerY + 50, teamColor));
+            players.add(new Player(prefix + "DF4", defX, centerY + 150, teamColor));
             // 4 Midfielders
-            players.add(new Player(prefix + "MF1", midX, centerY - 150));
-            players.add(new Player(prefix + "MF2", midX, centerY - 50));
-            players.add(new Player(prefix + "MF3", midX, centerY + 50));
-            players.add(new Player(prefix + "MF4", midX, centerY + 150));
+            players.add(new Player(prefix + "MF1", midX, centerY - 150, teamColor));
+            players.add(new Player(prefix + "MF2", midX, centerY - 50, teamColor));
+            players.add(new Player(prefix + "MF3", midX, centerY + 50, teamColor));
+            players.add(new Player(prefix + "MF4", midX, centerY + 150, teamColor));
             // 2 Forwards
-            players.add(new Player(prefix + "FW1", fwdX, centerY - 60));
-            players.add(new Player(prefix + "FW2", fwdX, centerY + 60));
+            players.add(new Player(prefix + "FW1", fwdX, centerY - 60, teamColor));
+            players.add(new Player(prefix + "FW2", fwdX, centerY + 60, teamColor));
         }
     }
 
@@ -139,8 +139,26 @@ public class Match {
                 if (p.getY() < ballY) p.moveDown(1);
                 if (p.getY() > ballY) p.moveUp(1);
             }
+            resolvePlayerCollisions();
+
+             // collision: whichever player is close enough takes possession
+        int pickupRadius = 18; // matches the ~9px draw radius of each circle, so they visually touch
+        for (Player p : players) {
+            int dx = p.getX() - ball.getX();
+            int dy = p.getY() - ball.getY();
+            double distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance <= pickupRadius) {
+                ball.setOwner(p);
+                break; // first match wins this tick
+            }
+        }
 
             ball.update();
+
+            // push updated positions to the pitch so it actually redraws
+            // this frame's state — repaint() is safe to call from a
+            // background thread, it just schedules the redraw on the EDT
+            pitch.setActors(gameActors);
 
             //PAUSE CAPTURE FOR REPAINT PHASES
             try {
@@ -151,6 +169,35 @@ public class Match {
             }
         }
     }
+
+    // Match.java — new method
+private void resolvePlayerCollisions() {
+    int minDistance = 20; // slightly more than the ~18px draw diameter, so they touch but don't overlap
+
+    for (int i = 0; i < players.size(); i++) {
+        for (int j = i + 1; j < players.size(); j++) {
+            Player a = players.get(i);
+            Player b = players.get(j);
+
+            int dx = b.getX() - a.getX();
+            int dy = b.getY() - a.getY();
+            double distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 0 && distance < minDistance) {
+                double overlap = (minDistance - distance) / 2;
+                int pushX = (int) Math.round(overlap * (dx / distance));
+                int pushY = (int) Math.round(overlap * (dy / distance));
+
+                // push a and b apart along the line connecting them
+                if (pushX > 0) { a.moveLeft(pushX); b.moveRight(pushX); }
+                else if (pushX < 0) { a.moveRight(-pushX); b.moveLeft(-pushX); }
+
+                if (pushY > 0) { a.moveUp(pushY); b.moveDown(pushY); }
+                else if (pushY < 0) { a.moveDown(-pushY); b.moveUp(-pushY); }
+            }
+        }
+    }
+}
 
     public void stopSimulation() {
         this.isRunning = false;

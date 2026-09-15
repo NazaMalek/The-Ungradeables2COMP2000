@@ -2,15 +2,22 @@ package Model;
 
 import java.awt.*;
 import javax.swing.*;
+import java.util.List;
+import java.util.ArrayList;
 
 import Rendering.ScreenSize;
 
 public class SoccerPitch extends JPanel {
 
+    private List<Actor> actors = new ArrayList<>();
+
     public SoccerPitch() {
-
         setPreferredSize(new Dimension(ScreenSize.width, ScreenSize.height));
+    }
 
+    public void setActors(List<Actor> actors) {
+        this.actors = actors;
+        repaint();
     }
 
     @Override
@@ -53,19 +60,10 @@ public class SoccerPitch extends JPanel {
         g.fillOval(spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
         g.fillOval(ScreenSize.width - spotOffset - 4, ScreenSize.height / 2 - 4, 8, 8);
 
+        // Actors (players + ball)
+        for (Actor a : actors) {
+            g.setColor(a.getColor());
+            g.fillOval(a.getX() - 9, a.getY() - 9, 18, 18);
+        }
     }
-
-    // public static void main(String[] args) {
-
-    //     JFrame frame = new JFrame("Soccer Simulation");
-
-    //     SoccerPitch pitch = new SoccerPitch();
-
-    //     frame.add(pitch);
-    //     frame.pack();
-
-    //     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    //     frame.setLocationRelativeTo(null);
-    //     frame.setVisible(true);
-    // }
 }

@@ -1,57 +1,57 @@
-import java.awt.color.*;
+package Model;
+
+import java.awt.Color;
 
 public abstract class AbstractActor implements Actor {
     protected int x;
     protected int y;
-    protected color color;
-    protected ActorShape shape; 
+    protected Color color;
+    protected ActorShapeEnum shape;
 
-    // constructorer
-    public AbstractActor(int startX, int startY, Color color, ActorShape shape) {
+    public AbstractActor(int startX, int startY, Color color, ActorShapeEnum shape) {
         this.x = startX;
         this.y = startY;
         this.color = color;
         this.shape = shape;
     }
 
-    @override
+    @Override
     public int getX() {
         return this.x;
     }
 
     @Override
-    public int GetY() {
+    public int getY() {
         return this.y;
     }
 
     @Override
-    public Color getColor() { 
-        return this.color; 
+    public Color getColor() {
+        return this.color;
     }
 
     @Override
-    public ActorShape getShape() { 
-        return this.shape; 
-    }
-
-    //  grid physics
-    @Override
-    public void moveUp(int distance) { 
-        this.y -= distance; 
+    public ActorShapeEnum getShape() {
+        return this.shape;
     }
 
     @Override
-    public void moveDown(int distance) { 
-        this.y += distance; 
+    public void moveUp(int distance) {
+        this.y -= distance;
     }
 
     @Override
-    public void moveLeft(int distance) { 
-        this.x -= distance; 
+    public void moveDown(int distance) {
+        this.y += distance;
     }
 
     @Override
-    public void moveRight(int distance) { 
-        this.x += distance; 
+    public void moveLeft(int distance) {
+        this.x -= distance;
+    }
+
+    @Override
+    public void moveRight(int distance) {
+        this.x += distance;
     }
 }

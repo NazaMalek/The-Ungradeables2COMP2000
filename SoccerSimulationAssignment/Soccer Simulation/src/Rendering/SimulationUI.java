@@ -50,6 +50,7 @@ import javax.swing.*;
 
 import Model.SoccerPitch;
 import Model.Player;
+import Model.Match;
 
 class UIWindow {
     JFrame frame;
@@ -472,10 +473,15 @@ class MatchSettingsMenu extends Menus {
  * 
  */
 class SimWindow extends Menus {
+    Match match;
     SimWindow(UIWindow window) {
         super(window);
         setLayout(null);
-        window.pitch.setBounds(0, 0, ScreenSize.width, ScreenSize.height);
+
+        match = new Match();
+
+        match.setupAndStartSimulation(window.formationCircle.getCurrent(), window.formationCircle.getCurrent());
+
 
         JButton menuButton = new JButton("Menu");
         menuButton.addActionListener(e -> back());
@@ -486,8 +492,9 @@ class SimWindow extends Menus {
 
         menuButton.setBounds(ScreenSize.width / 5 - 125, ScreenSize.height - 385, 80, 40);
 
+        match.pitch.setBounds(0, 0, ScreenSize.width, ScreenSize.height);
         add(menuButton);
-        add(window.pitch);
+        add(match.pitch);
 
     }
 
