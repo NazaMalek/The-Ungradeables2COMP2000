@@ -35,7 +35,7 @@ public class Player extends Actor{
     @Override 
     void moveUp(int distance){
         if(this.y + distance <= 0){
-            
+            //boundary needs adding for all move methods
         }
         this.y += distance;
 

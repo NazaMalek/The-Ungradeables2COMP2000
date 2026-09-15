@@ -19,8 +19,8 @@ public class Ball extends Actor {
 
     private void syncWithPlayer() {
         if (owner != null) {
-            this.x = owner.getX();
-            this.y = owner.getY();
+            this.x = owner.x;
+            this.y = owner.y;
         }
     }
 
@@ -48,13 +48,11 @@ public class Ball extends Actor {
         if (velocityX < 0) velocityX++;
     }
 
-    @Override
     public int getX() {
         if (owner != null) syncWithPlayer();
         return this.x;
     }
 
-    @Override
     public int getY() {
         if (owner != null) syncWithPlayer();
         return this.y;
