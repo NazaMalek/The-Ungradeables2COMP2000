@@ -1,18 +1,20 @@
-import java.awt.color.*;
+// Actor.java
 package Model;
 
-public abstract class Actor {
-    //cords
-    int getX;
-    int getY;
+import java.awt.Color;
 
-    //mov events
-    abstract void moveUp(int distance);
-    abstract void moveDown(int distance);
-    abstract void moveLeft(int distance);
-    abstract void moveRight(int distance);
-    
-    //visual
+public interface Actor {
+    // movement events
+    void moveUp(int distance);
+    void moveDown(int distance);
+    void moveLeft(int distance);
+    void moveRight(int distance);
+
+    // coordinates
+    int getX();
+    int getY();
+
+    // visual
     Color getColor();
-    ActorShape getShape();
+    ActorShapeEnum getShape();
 }

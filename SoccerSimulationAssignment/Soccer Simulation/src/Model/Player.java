@@ -1,3 +1,4 @@
+// Player.java
 package Model;
 
 import java.awt.Color;
@@ -29,8 +30,7 @@ public class Player implements Actor {
         int textY = y + metrics.getHeight() / 2 - metrics.getDescent();
         g.drawString(number, textX, textY);
     }
-    
-    // interface required getters
+
     @Override
     public int getX() { return this.x; }
 
@@ -41,33 +41,30 @@ public class Player implements Actor {
     public Color getColor() { return this.colour; }
 
     @Override
-    public ActorShape getShape() { return ActorShape.SQUARE; } // Or custom assignment
+    public ActorShapeEnum getShape() { return ActorShapeEnum.SQUARE; }
 
-    //movement
-    @Override 
+    @Override
     public void moveUp(int distance) {
-        // boundary checking
         if (this.y - distance >= 0) {
-            this.y -= distance; // Moving UP subtracts from Y
+            this.y -= distance;
         }
     }
 
-    @Override 
+    @Override
     public void moveDown(int distance) {
-        // height limit is from screen size
         if (this.y + distance <= Rendering.ScreenSize.height) {
-            this.y += distance; 
+            this.y += distance;
         }
     }
 
-    @Override 
+    @Override
     public void moveLeft(int distance) {
         if (this.x - distance >= 0) {
             this.x -= distance;
         }
     }
 
-    @Override 
+    @Override
     public void moveRight(int distance) {
         if (this.x + distance <= Rendering.ScreenSize.width) {
             this.x += distance;

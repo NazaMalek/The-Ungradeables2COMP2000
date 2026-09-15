@@ -166,7 +166,7 @@ class MainMenu extends Menus {
     MainMenu(UIWindow window) {
         super(window);
         setLayout(null);
-        window.pitch.setBounds(0, 0, 700, 400);
+        window.pitch.setBounds(0, 0, ScreenSize.width, ScreenSize.height);
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener(e -> next1());
@@ -219,7 +219,7 @@ class StartMenu extends Menus {
     StartMenu(UIWindow window) {
         super(window);
         setLayout(null);
-        window.vertPitch.setBounds(0, 0, 700, 400);
+        window.vertPitch.setBounds(0, 0, ScreenSize.width, ScreenSize.height);
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener(e -> next1());
