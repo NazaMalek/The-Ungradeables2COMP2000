@@ -1,6 +1,5 @@
 package Model;
 
-import Rendering.SimulationUI;
 import Rendering.ScreenSize;
 import java.awt.Color;
 
@@ -10,15 +9,12 @@ public class Ball implements Actor {
 
     private Player owner;
 
-    // Ball velocity is stored as a double so friction can slow
-    // the ball smoothly instead of removing 1 pixel every frame.
+    // Ball velocity is stored as a double so friction slows it smoothly
     private double velocityX = 0;
     private double velocityY = 0;
 
     private static final int OWNER_OFFSET_X = 14;
     private static final int OWNER_OFFSET_Y = 0;
-
-    // The actors are drawn as 18px circles, so keep the centre at least 9px away from the edge of the pitch.
     private static final int BALL_RADIUS = 9;
 
     public Ball(Player initialOwner) {
@@ -28,10 +24,12 @@ public class Ball implements Actor {
 
     private void syncWithPlayer() {
         if (owner != null) {
-            this.x = owner.getX() + OWNER_OFFSET_X;
-            this.y = owner.getY() + OWNER_OFFSET_Y;
+            // Home attacks right and Away attacks left, so keep the ball
+            // in front of its owner in the correct attacking direction
+            int attackDirection = owner.getName().startsWith("Away_") ? -1 : 1;
 
-            // Keep the ball visible even if its owner reaches the edge
+            this.x = owner.getX() + (OWNER_OFFSET_X * attackDirection);
+            this.y = owner.getY() + OWNER_OFFSET_Y;
             keepInsidePitch();
         }
     }
@@ -56,11 +54,9 @@ public class Ball implements Actor {
     }
 
     private void applyFriction() {
-        // ease slow the ball down
         velocityX *= 0.96;
         velocityY *= 0.96;
 
-        // clamp small vel so ball stops and doesnt go forever
         if (Math.abs(velocityX) < 0.15) {
             velocityX = 0;
         }
@@ -71,7 +67,6 @@ public class Ball implements Actor {
     }
 
     private void keepInsidePitch() {
-
         if (x < BALL_RADIUS) {
             x = BALL_RADIUS;
             velocityX = 0;
@@ -152,14 +147,13 @@ public class Ball implements Actor {
     public void setOwner(Player p) {
         this.owner = p;
 
-        // Once somebody controls the ball clear old velocity
+        // Remove any old kick velocity when possession is gained or reset
         this.velocityX = 0;
         this.velocityY = 0;
 
         syncWithPlayer();
     }
 
-    // Match uses this to determine of ball is in pos or not
     public Player getOwner() {
         return owner;
     }
