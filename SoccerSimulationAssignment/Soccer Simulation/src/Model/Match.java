@@ -267,6 +267,30 @@ public class Match {
         int targetX = clamp(p.getHomeX() + xShift, 20, ScreenSize.width - 20);
         int targetY = clamp(p.getHomeY() + yShift, 20, ScreenSize.height - 20);
 
+        // Nearby players move slowly into supporting positions around the ball.
+        // The influence fades with distance, so the whole team does not swarm it.
+        double distanceToBall = distanceBetween(p.getX(), p.getY(), ballX, ballY);
+        int supportRange = 220;
+
+        if (distanceToBall < supportRange) {
+            double influence = (supportRange - distanceToBall) / supportRange;
+            double pullStrength = 0.10 + (influence * 0.15);
+
+            int supportX = clamp(
+                    (int) Math.round((ballX - targetX) * pullStrength),
+                    -40,
+                    40
+            );
+            int supportY = clamp(
+                    (int) Math.round((ballY - targetY) * pullStrength),
+                    -30,
+                    30
+            );
+
+            targetX = clamp(targetX + supportX, 20, ScreenSize.width - 20);
+            targetY = clamp(targetY + supportY, 20, ScreenSize.height - 20);
+        }
+
         moveToward(p, targetX, targetY, 1);
     }
 
