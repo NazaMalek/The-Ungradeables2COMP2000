@@ -1,3 +1,4 @@
+import java.awt.color.*;
 package Model;
 
 public abstract class Actor {
@@ -11,4 +12,7 @@ public abstract class Actor {
     abstract void moveLeft(int distance);
     abstract void moveRight(int distance);
     
+    //visual
+    Color getColor();
+    ActorShape getShape();
 }
