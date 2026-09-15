@@ -33,6 +33,11 @@ public class Match {
     private Player recentPasser;
     private int recentPasserCooldown;
 
+    // Match score and the short pause used after a goal
+    private int homeScore;
+    private int awayScore;
+    private int goalPauseTicks;
+
     public Match() {
         this.pitch = new SoccerPitch();
         this.gameActors = new ArrayList<>();
@@ -50,6 +55,11 @@ public class Match {
         recentPasser = null;
         recentPasserCooldown = 0;
         ticksUntilPass = 70;
+        homeScore = 0;
+        awayScore = 0;
+        goalPauseTicks = 0;
+        pitch.setScore(homeScore, awayScore);
+        pitch.setMatchMessage("");
 
         // summon ball in centre
         ball = new Ball(null);
@@ -142,8 +152,36 @@ public class Match {
     // background engine checking frame
     private void runSimulationEngineLoop() {
         while (isRunning) {
+            // Briefly hold the reset formation after a goal before restarting
+            if (goalPauseTicks > 0) {
+                goalPauseTicks--;
+
+                if (goalPauseTicks == 0) {
+                    pitch.setMatchMessage("");
+                }
+
+                pitch.setActors(gameActors);
+
+                if (!pauseForNextFrame()) {
+                    break;
+                }
+
+                continue;
+            }
+
             // Move a loose ball, or sync an owned ball with its player
             ball.update();
+
+            // A goal ends this passage of play and resets everyone for kickoff
+            if (checkForGoal()) {
+                pitch.setActors(gameActors);
+
+                if (!pauseForNextFrame()) {
+                    break;
+                }
+
+                continue;
+            }
 
             int ballX = ball.getX();
             int ballY = ball.getY();
@@ -224,14 +262,82 @@ public class Match {
             // background thread, it just schedules the redraw on the EDT
             pitch.setActors(gameActors);
 
-            //PAUSE CAPTURE FOR REPAINT PHASES
-            try {
-                Thread.sleep(16); // Standard 60 fps
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            if (!pauseForNextFrame()) {
                 break;
             }
         }
+    }
+
+    //PAUSE CAPTURE FOR REPAINT PHASES
+    private boolean pauseForNextFrame() {
+        try {
+            Thread.sleep(16); // Standard 60 fps
+            return true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+
+    // Check whether the centre of the ball has entered either goal area
+    private boolean checkForGoal() {
+        int goalTop = (ScreenSize.height - SoccerPitch.GOAL_HEIGHT) / 2;
+        int goalBottom = goalTop + SoccerPitch.GOAL_HEIGHT;
+        int ballX = ball.getX();
+        int ballY = ball.getY();
+
+        if (ballY < goalTop || ballY > goalBottom) {
+            return false;
+        }
+
+        String scoringTeam;
+
+        // Home attacks the goal on the right; Away attacks the goal on the left
+        if (ballX >= ScreenSize.width - SoccerPitch.GOAL_WIDTH) {
+            homeScore++;
+            scoringTeam = "HOME";
+        } else if (ballX <= SoccerPitch.GOAL_WIDTH) {
+            awayScore++;
+            scoringTeam = "AWAY";
+        } else {
+            return false;
+        }
+
+        pitch.setScore(homeScore, awayScore);
+        pitch.setMatchMessage("GOAL! " + scoringTeam);
+        resetForKickoff();
+        goalPauseTicks = 60; // about one second at 60 fps
+        return true;
+    }
+
+    // Return the players and ball to their starting positions after a goal
+    private void resetForKickoff() {
+        for (Player p : players) {
+            moveToward(p, p.getHomeX(), p.getHomeY(), ScreenSize.width);
+        }
+
+        // Release the ball, remove its velocity and move it back to the centre
+        ball.setOwner(null);
+        ball.kick(0, 0);
+
+        int centerX = ScreenSize.width / 2;
+        int centerY = ScreenSize.height / 2;
+
+        if (ball.getX() < centerX) {
+            ball.moveRight(centerX - ball.getX());
+        } else if (ball.getX() > centerX) {
+            ball.moveLeft(ball.getX() - centerX);
+        }
+
+        if (ball.getY() < centerY) {
+            ball.moveDown(centerY - ball.getY());
+        } else if (ball.getY() > centerY) {
+            ball.moveUp(ball.getY() - centerY);
+        }
+
+        recentPasser = null;
+        recentPasserCooldown = 0;
+        ticksUntilPass = 70;
     }
 
     private boolean isHome(Player p) {
@@ -427,7 +533,7 @@ public class Match {
         if (gk.getY() > maxY) gk.moveUp(gk.getY() - maxY);
     }
 
-    // Match.java — new method
+    // new method for fixing player col
     private void resolvePlayerCollisions() {
         int minDistance = 20; // slightly more than the ~18px draw diameter, so they touch but don't overlap
 
@@ -467,6 +573,22 @@ public class Match {
         if (simulationThread != null && simulationThread != Thread.currentThread()) {
             simulationThread.interrupt();
         }
+    }
+
+    // Called by the timer when match over
+    public void finishMatch() {
+        stopSimulation();
+        pitch.setScore(homeScore, awayScore);
+        pitch.setMatchMessage("FULL TIME: HOME " + homeScore + " - " + awayScore + " AWAY");
+        pitch.setActors(gameActors);
+    }
+
+    public int getHomeScore() {
+        return homeScore;
+    }
+
+    public int getAwayScore() {
+        return awayScore;
     }
 
     public ArrayList<Actor> getGameActors() {

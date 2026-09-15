@@ -11,8 +11,13 @@ public class SoccerPitch extends JPanel {
 
     public static final int PENALTY_WIDTH = 100;
     public static final int PENALTY_HEIGHT = 200;
+    public static final int GOAL_WIDTH = 50;
+    public static final int GOAL_HEIGHT = 100;
 
     private List<Actor> actors = new ArrayList<>();
+    private volatile int homeScore = 0;
+    private volatile int awayScore = 0;
+    private volatile String matchMessage = "";
 
     public SoccerPitch() {
         setPreferredSize(new Dimension(ScreenSize.width, ScreenSize.height));
@@ -20,6 +25,17 @@ public class SoccerPitch extends JPanel {
 
     public void setActors(List<Actor> actors) {
         this.actors = actors;
+        repaint();
+    }
+
+    public void setScore(int homeScore, int awayScore) {
+        this.homeScore = homeScore;
+        this.awayScore = awayScore;
+        repaint();
+    }
+
+    public void setMatchMessage(String matchMessage) {
+        this.matchMessage = matchMessage == null ? "" : matchMessage;
         repaint();
     }
 
@@ -52,10 +68,9 @@ public class SoccerPitch extends JPanel {
         g.drawRect(ScreenSize.width - PENALTY_WIDTH, penaltyY, PENALTY_WIDTH, PENALTY_HEIGHT);
 
         // Goals
-        int goalWidth = 50, goalHeight = 100;
-        int goalY = (ScreenSize.height - goalHeight) / 2;
-        g.drawRect(0, goalY, goalWidth, goalHeight);
-        g.drawRect(ScreenSize.width - goalWidth, goalY, goalWidth, goalHeight);
+        int goalY = (ScreenSize.height - GOAL_HEIGHT) / 2;
+        g.drawRect(0, goalY, GOAL_WIDTH, GOAL_HEIGHT);
+        g.drawRect(ScreenSize.width - GOAL_WIDTH, goalY, GOAL_WIDTH, GOAL_HEIGHT);
 
         // Penalty spots
         int spotOffset = 79;
@@ -66,6 +81,28 @@ public class SoccerPitch extends JPanel {
         for (Actor a : actors) {
             g.setColor(a.getColor());
             g.fillOval(a.getX() - 9, a.getY() - 9, 18, 18);
+        }
+
+        // Scoreboard
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 22));
+        String scoreText = "HOME  " + homeScore + "  -  " + awayScore + "  AWAY";
+        FontMetrics scoreMetrics = g.getFontMetrics();
+        int scoreX = (ScreenSize.width - scoreMetrics.stringWidth(scoreText)) / 2;
+        g.drawString(scoreText, scoreX, 88);
+
+        // Temporary goal message or final full-time result
+        if (!matchMessage.isEmpty()) {
+            g.setFont(new Font("Arial", Font.BOLD, 28));
+            FontMetrics messageMetrics = g.getFontMetrics();
+            int messageWidth = messageMetrics.stringWidth(matchMessage);
+            int messageX = (ScreenSize.width - messageWidth) / 2;
+            int messageY = ScreenSize.height / 2;
+
+            g.setColor(new Color(0, 0, 0, 170));
+            g.fillRoundRect(messageX - 18, messageY - 34, messageWidth + 36, 48, 16, 16);
+            g.setColor(Color.WHITE);
+            g.drawString(matchMessage, messageX, messageY);
         }
     }
 }

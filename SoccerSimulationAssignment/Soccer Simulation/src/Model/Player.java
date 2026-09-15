@@ -17,7 +17,7 @@ public class Player implements Actor {
     private final int homeX;
     private final int homeY;
 
-    // rendering specific jersy colour
+    // render specific jersy colour
     public Player(int x, int y, int jerseyNumber, Color colour) {
         this("", x, y, jerseyNumber, colour);
     }
@@ -26,7 +26,7 @@ public class Player implements Actor {
         this(name, x, y, 0, colour);
     }
 
-    // Used by Match for the goalkeeper specifically
+    // Used by Match for the goalkeeper 
     public Player(String name, int x, int y, Color colour, boolean isGoalkeeper) {
         this(name, x, y, 0, colour);
         this.isGoalkeeper = isGoalkeeper;
@@ -54,12 +54,12 @@ public class Player implements Actor {
         return isGoalkeeper;
     }
 
-    // Original formation X position
+    // og formation X position
     public int getHomeX() {
         return homeX;
     }
 
-    // Original formation Y position
+    // og formation Y position
     public int getHomeY() {
         return homeY;
     }
