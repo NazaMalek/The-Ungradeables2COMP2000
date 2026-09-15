@@ -1,15 +1,13 @@
 package Model;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.font.*;
 
-import Rendering.ScreenSize;
-
-
-public class Player extends Actor{
-
+public class Player implements Actor {
+    private int x;
+    private int y;
     private int jerseyNumber;
     private Color colour;
 
@@ -32,28 +30,47 @@ public class Player extends Actor{
         g.drawString(number, textX, textY);
     }
     
+    // interface required getters
+    @Override
+    public int getX() { return this.x; }
+
+    @Override
+    public int getY() { return this.y; }
+
+    @Override
+    public Color getColor() { return this.colour; }
+
+    @Override
+    public ActorShape getShape() { return ActorShape.SQUARE; } // Or custom assignment
+
+    //movement
     @Override 
-    void moveUp(int distance){
-        if(this.y + distance <= 0){
-            //boundary needs adding for all move methods
+    public void moveUp(int distance) {
+        // boundary checking
+        if (this.y - distance >= 0) {
+            this.y -= distance; // Moving UP subtracts from Y
         }
-        this.y += distance;
-
     }
 
     @Override 
-    void moveDown(int distance){
-        this.y -= distance;
+    public void moveDown(int distance) {
+        // height limit is from screen size
+        if (this.y + distance <= Rendering.ScreenSize.height) {
+            this.y += distance; 
+        }
     }
 
     @Override 
-    void moveLeft(int distance){
-        this.x -= distance;
-
+    public void moveLeft(int distance) {
+        if (this.x - distance >= 0) {
+            this.x -= distance;
+        }
     }
 
     @Override 
-    void moveRight(int distance){
-        this.x += distance;
+    public void moveRight(int distance) {
+        if (this.x + distance <= Rendering.ScreenSize.width) {
+            this.x += distance;
+        }
     }
 }
