@@ -27,13 +27,21 @@ public class Match {
     SoccerPitch pitch;
     Ball ball;
 
+    //core simulation tracking arrays
+    private ArrayList<Actor> gameActors;
+    private ArrayList<Player> players;
+    Private simulationUI simulationUI;
+    private boolean isRunning;
 
-    Match() {
+
+    public Match() {
         pitch = new SoccerPitch();
+        gameActors = new ArrayList<>();
+        players = new ArrayList<>();
+        isRunning = true;
+
+        initMatchSimulation();
     }
-
-    
-
 
 }
 
