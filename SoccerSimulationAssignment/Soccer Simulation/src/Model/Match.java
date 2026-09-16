@@ -217,32 +217,47 @@ public class Match {
 
             // player ai
             for (Player p : players) {
-                if (isStunned(p)) {
-                    // A player who has just lost the ball cannot instantly steal it back
-                    continue;
-                } else if (p.isGoalkeeper()) {
-                    updateGoalkeeper(p, ballY);
-                } else if (owner == null) {
-                    if (p == homeChaser || p == awayChaser) {
-                        moveToward(p, ballX, ballY, 2);
+                try {
+                    if (isStunned(p)) {
+                        // A player who has just lost the ball cannot instantly steal it back
+                        continue;
+                    } else if (p.isGoalkeeper()) {
+                        updateGoalkeeper(p, ballY);
+                    } else if (owner == null) {
+                        if (p == homeChaser || p == awayChaser) {
+                            moveToward(p, ballX, ballY, 2);
+                        } else {
+                            // Everyone else shuffles with the play but keeps formation
+                            moveIntoShape(p, ballX, ballY);
+                        }
+                    } else if (p == owner) {
+                        // The player in possession dribbles toward the opposing goal
+                        int direction = isHome(p) ? 1 : -1;
+                        moveToward(p, p.getX() + (direction * 25), p.getY(), 1);
+                    } else if (p == presser) {
+                        moveToward(p, owner.getX(), owner.getY(), 2);
                     } else {
                         // Everyone else shuffles with the play but keeps formation
                         moveIntoShape(p, ballX, ballY);
                     }
-                } else if (p == owner) {
-                    // The player in possession dribbles toward the opposing goal
-                    int direction = isHome(p) ? 1 : -1;
-                    moveToward(p, p.getX() + (direction * 25), p.getY(), 1);
-                } else if (p == presser) {
-                    moveToward(p, owner.getX(), owner.getY(), 2);
-                } else {
-                    // Everyone else shuffles with the play but keeps formation
-                    moveIntoShape(p, ballX, ballY);
+                } catch (InvalidPositionException e) {
+                    // This player's move would have taken them off the pitch —
+                    // skip it for this tick and let them try again next tick
+                    System.out.println(e.getMessage());
                 }
             }
 
-            resolvePlayerCollisions();
-            attemptTackle();
+            try {
+                resolvePlayerCollisions();
+            } catch (InvalidPositionException e) {
+                System.out.println(e.getMessage());
+            }
+
+            try {
+                attemptTackle();
+            } catch (InvalidPositionException e) {
+                System.out.println(e.getMessage());
+            }
 
             if (recentPasserCooldown > 0) {
                 recentPasserCooldown--;
