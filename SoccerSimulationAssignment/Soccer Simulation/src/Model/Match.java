@@ -49,11 +49,28 @@ public class Match {
     private int awayScore;
     private int goalPauseTicks;
 
+    // Observer pattern: anyone who needs to react to a goal or full time
+    // registers here instead of Match calling them by name
+    private final java.util.List<MatchListener> listeners = new ArrayList<>();
+
     public Match() {
         this.pitch = new SoccerPitch();
         this.gameActors = new ArrayList<>();
         this.players = new ArrayList<>();
         this.isRunning = false;
+        addListener(pitch);
+    }
+
+    public void addListener(MatchListener listener) {
+        listeners.add(listener);
+    }
+
+    private void notifyGoal(String scoringTeam) {
+        listeners.forEach(l -> l.onGoalScored(scoringTeam, homeScore, awayScore));
+    }
+
+    private void notifyMatchEnd() {
+        listeners.forEach(l -> l.onMatchEnd(homeScore, awayScore));
     }
 
     // spawn entities
@@ -347,8 +364,7 @@ public class Match {
             return false;
         }
 
-        pitch.setScore(homeScore, awayScore);
-        pitch.setMatchMessage("GOAL! " + scoringTeam);
+        notifyGoal(scoringTeam);
         resetForKickoff();
         goalPauseTicks = 60; // about one second at 60 fps
         return true;
@@ -508,45 +524,27 @@ public class Match {
         moveToward(p, targetX, targetY, 1);
     }
 
+    // Streams replace what used to be a hand-rolled "track the smallest
+    // distance seen so far" loop. filter() picks out the players who are
+    // actually eligible to chase this target, and min() with a lambda
+    // comparator does the distance comparison, so the method is now just
+    // "which eligible player is nearest" instead of loop bookkeeping.
     private Player findClosestPlayer(boolean homeTeam, int targetX, int targetY) {
-        Player closest = null;
-        double closestDistance = Double.MAX_VALUE;
-
-        for (Player p : players) {
-            if (p.isGoalkeeper() || isStunned(p) || isHome(p) != homeTeam) {
-                continue;
-            }
-
-            double distance = distanceBetween(p.getX(), p.getY(), targetX, targetY);
-
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closest = p;
-            }
-        }
-
-        return closest;
+        return players.stream()
+                .filter(p -> !p.isGoalkeeper() && !isStunned(p) && isHome(p) == homeTeam)
+                .min(Comparator.comparingDouble(
+                        p -> distanceBetween(p.getX(), p.getY(), targetX, targetY)))
+                .orElse(null);
     }
 
     private Player findClosestOpponent(Player owner) {
-        Player closest = null;
-        double closestDistance = Double.MAX_VALUE;
         boolean ownerIsHome = isHome(owner);
 
-        for (Player p : players) {
-            if (p.isGoalkeeper() || isStunned(p) || isHome(p) == ownerIsHome) {
-                continue;
-            }
-
-            double distance = distanceBetween(p.getX(), p.getY(), owner.getX(), owner.getY());
-
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closest = p;
-            }
-        }
-
-        return closest;
+        return players.stream()
+                .filter(p -> !p.isGoalkeeper() && !isStunned(p) && isHome(p) != ownerIsHome)
+                .min(Comparator.comparingDouble(
+                        p -> distanceBetween(p.getX(), p.getY(), owner.getX(), owner.getY())))
+                .orElse(null);
     }
 
     private Player findPlayerTouchingBall(int pickupRadius) {
@@ -714,8 +712,7 @@ public class Match {
     // Called by TimerPanel when the match clock reaches 00:00
     public void finishMatch() {
         stopSimulation();
-        pitch.setScore(homeScore, awayScore);
-        pitch.setMatchMessage("FULL TIME: HOME " + homeScore + " - " + awayScore + " AWAY");
+        notifyMatchEnd();
         pitch.setActors(gameActors);
     }
 

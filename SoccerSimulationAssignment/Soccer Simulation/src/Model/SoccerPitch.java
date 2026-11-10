@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import Rendering.ScreenSize;
 
-public class SoccerPitch extends JPanel {
+public class SoccerPitch extends JPanel implements MatchListener {
 
     public static final int PENALTY_WIDTH = 100;
     public static final int PENALTY_HEIGHT = 200;
@@ -37,6 +37,21 @@ public class SoccerPitch extends JPanel {
     public void setMatchMessage(String matchMessage) {
         this.matchMessage = matchMessage == null ? "" : matchMessage;
         repaint();
+    }
+
+    // MatchListener implementation - the pitch reacts to match events
+    // instead of Match having to know it exists and call its setters
+    // directly. Match only knows about the MatchListener interface.
+    @Override
+    public void onGoalScored(String scoringTeam, int homeScore, int awayScore) {
+        setScore(homeScore, awayScore);
+        setMatchMessage("GOAL! " + scoringTeam);
+    }
+
+    @Override
+    public void onMatchEnd(int homeScore, int awayScore) {
+        setScore(homeScore, awayScore);
+        setMatchMessage("FULL TIME: HOME " + homeScore + " - " + awayScore + " AWAY");
     }
 
     @Override
