@@ -429,27 +429,16 @@ public class Match {
             return;
         }
 
-        Player closestTackler = null;
-        double closestDistance = Double.MAX_VALUE;
-
-        for (Player opponent : players) {
-            if (opponent.isGoalkeeper() || isStunned(opponent)
-                    || isHome(opponent) == isHome(owner)) {
-                continue;
-            }
-
-            double distance = distanceBetween(
-                    opponent.getX(),
-                    opponent.getY(),
-                    owner.getX(),
-                    owner.getY()
-            );
-
-            if (distance <= TACKLE_DISTANCE && distance < closestDistance) {
-                closestDistance = distance;
-                closestTackler = opponent;
-            }
-        }
+        Player closestTackler = players.stream()
+                .filter(opponent -> !opponent.isGoalkeeper()
+                        && !isStunned(opponent)
+                        && isHome(opponent) != isHome(owner))
+                .filter(opponent -> distanceBetween(
+                        opponent.getX(), opponent.getY(), owner.getX(), owner.getY())
+                        <= TACKLE_DISTANCE)
+                .min(Comparator.comparingDouble(opponent -> distanceBetween(
+                        opponent.getX(), opponent.getY(), owner.getX(), owner.getY())))
+                .orElse(null);
 
         if (closestTackler != null && random.nextInt(TACKLE_CHANCE) == 0) {
             completeTackle(owner, closestTackler);
