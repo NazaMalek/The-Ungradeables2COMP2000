@@ -59,6 +59,7 @@ public class Match {
         this.players = new ArrayList<>();
         this.isRunning = false;
         addListener(pitch);
+        addListener(new MatchStats());
     }
 
     public void addListener(MatchListener listener) {
@@ -71,6 +72,10 @@ public class Match {
 
     private void notifyMatchEnd() {
         listeners.forEach(l -> l.onMatchEnd(homeScore, awayScore));
+    }
+
+    private void notifyTackle(String team) {
+        listeners.forEach(l -> l.onTackle(team));
     }
 
     // spawn entities
@@ -448,6 +453,7 @@ public class Match {
     private void completeTackle(Player playerWhoLostBall, Player tackler) {
         ball.setOwner(tackler);
         stunnedPlayers.put(playerWhoLostBall, STUN_TICKS);
+        notifyTackle(isHome(tackler) ? "HOME" : "AWAY");
 
         possessionTicks = 0;
         ticksUntilPass = 50 + random.nextInt(70);

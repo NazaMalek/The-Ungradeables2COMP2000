@@ -18,4 +18,11 @@ public interface MatchListener {
     void onGoalScored(String scoringTeam, int homeScore, int awayScore);
 
     void onMatchEnd(int homeScore, int awayScore);
+
+    // Default method: tackles only matter to some listeners (MatchStats
+    // counts them, the pitch doesn't draw anything for them), so giving
+    // this a default empty body means SoccerPitch didn't have to change
+    // when the event was added.
+    default void onTackle(String team) {
+    }
 }
