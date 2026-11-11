@@ -493,7 +493,9 @@ NEEDS:
  
          menuButton.setBounds(ScreenSize.width / 5 - 125, ScreenSize.height - 385, 80, 40);
          
-         TimerPanel timerPanel = new TimerPanel();
+         // Pass the match in, so the timer can end it at 00:00 - with the
+        // no-arg constructor the clock stopped but the match played on
+        TimerPanel timerPanel = new TimerPanel(match);
          timerPanel.setBounds(ScreenSize.width / 2 - 75, 20, 150, 40);
  
          match.pitch.setBounds(0, 0, ScreenSize.width, ScreenSize.height);
